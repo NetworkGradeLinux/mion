@@ -1,0 +1,24 @@
+[submodule "meta-oryx"]
+	path = meta-oryx
+	url = https://gitlab.com/oryx/meta-oryx.git
+[submodule "build"]
+	path = build
+	url = https://gitlab.com/oryx/oryx-build.git
+[submodule "bitbake"]
+	path = bitbake
+	url = git://git.openembedded.org/bitbake
+[submodule "openembedded-core"]
+	path = openembedded-core
+	url = git://git.openembedded.org/openembedded-core
+[submodule "meta-openembedded"]
+	path = meta-openembedded
+	url = git://git.openembedded.org/meta-openembedded
+[submodule "meta-virtualization"]
+	path = meta-virtualization
+	url = https://git.yoctoproject.org/git/meta-virtualization
+[submodule "meta-raspberrypi"]
+	path = meta-raspberrypi
+	url = https://github.com/agherzan/meta-raspberrypi.git
+[submodule "meta-yocto"]
+	path = meta-yocto
+	url = https://git.yoctoproject.org/git/meta-yocto
