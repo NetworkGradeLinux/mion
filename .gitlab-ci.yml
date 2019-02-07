@@ -1,30 +1,18 @@
 variables:
     GIT_SUBMODULE_STRATEGY: recursive
 
-before_script:
-    - export ORYX_VERSION=${CI_BUILD_REF_SLUG}_$(date -I)
-    - echo 'INHERIT += "rm_work"' > build/conf/auto.conf
-    - mkdir -p ~/ci-cache/{sstate-cache,downloads}
-    - ln -sfn ~/ci-cache/sstate-cache build/
-    - ln -sfn ~/ci-cache/downloads build/
-    - source build/conf/setenv
-
-after_script:
-    - rm -rf build/tmp
-    - rm -rf build/cache
-
 qemux86:
     script:
-        - ./scripts/run-build.py -M qemux86 -V ${ORYX_VERSION}
+        - ./ci/run.py ${CI_BUILD_REF_SLUG}_$(date -I) qemux86
 
 raspberrypi3:
     script:
-        - ./scripts/run-build.py -M raspberrypi3 -V ${ORYX_VERSION}
+        - ./ci/run.py ${CI_BUILD_REF_SLUG}_$(date -I) raspberrypi3
 
 raspberrypi3-64:
     script:
-        - ./scripts/run-build.py -M raspberrypi3-64 -V ${ORYX_VERSION}
+        - ./ci/run.py ${CI_BUILD_REF_SLUG}_$(date -I) raspberrypi3-64
 
 beaglebone-yocto:
     script:
-        - ./scripts/run-build.py -M beaglebone-yocto -V ${ORYX_VERSION}
+        - ./ci/run.py ${CI_BUILD_REF_SLUG}_$(date -I) beaglebone-yocto
