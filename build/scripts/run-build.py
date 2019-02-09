@@ -24,7 +24,11 @@ def run_build(args):
 
     subfolder = get_subfolder(args)
 
-    bitbake_status = subprocess.call("bitbake oryx-publish", shell=True)
+    bitbake_args = ""
+    if args.bitbake_continue:
+        bitbake_args += " -k"
+
+    bitbake_status = subprocess.call("bitbake %s oryx-publish" % (bitbake_args), shell=True)
 
     # Copy the contents of the output files out of the tmp folder. The
     # destination folder must not already exist for copytree to work.
@@ -84,6 +88,9 @@ def parse_args():
     parser.add_argument("-C", "--clean", help="Performs a clean build", action="store_true")
 
     parser.add_argument("-L", "--logs", help="Captures and archives log files", action="store_true")
+
+    parser.add_argument("-k", "--continue", dest="bitbake_continue", action="store_true",
+            help="Continue as much as possible after an error")
 
     return parser.parse_args()
 
