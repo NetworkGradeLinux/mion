@@ -8,13 +8,16 @@ import shutil
 import sys
 import tarfile
 
+def msg(message):
+    print(message, flush=True)
+
 def get_subfolder(args):
     return "%s/%s/%s/%s/" % (args.version, args.machine, args.system_profile, args.application_profile)
 
 def run_build(args):
     """Run a build using the configuration given in the args namespace"""
 
-    print(">>> Building Oryx with ORYX_VERSION=%s MACHINE=%s SYSTEM_PROFILE=%s APPLICATION_PROFILE=%s"
+    msg(">>> Building Oryx with ORYX_VERSION=%s MACHINE=%s SYSTEM_PROFILE=%s APPLICATION_PROFILE=%s"
             % (args.version, args.machine, args.system_profile, args.application_profile))
 
     os.environ['ORYX_VERSION'] = args.version
@@ -98,13 +101,13 @@ def main():
     args = parse_args()
 
     if args.clean and os.path.exists("tmp"):
-        print(">>> Cleaning")
+        msg(">>> Cleaning")
         shutil.rmtree("tmp")
 
     exitcode = run_build(args)
 
     if args.logs:
-        print(">>> Capturing logs")
+        msg(">>> Capturing logs")
         capture_logs(args)
 
     sys.exit(exitcode)
