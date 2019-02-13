@@ -12,9 +12,9 @@ qemux86:
     script:
         - ./scripts/run-build.py -M qemux86 -V ${ORYX_VERSION}
 
-raspberrypi2:
+raspberrypi3:
     script:
-        - ./scripts/run-build.py -M raspberrypi2 -V ${ORYX_VERSION}
+        - ./scripts/run-build.py -M raspberrypi3 -V ${ORYX_VERSION}
 
 raspberrypi3-64:
     script:
