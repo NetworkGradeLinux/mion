@@ -3,10 +3,15 @@ variables:
 
 before_script:
     - export ORYX_VERSION=${CI_BUILD_REF_SLUG}_$(date -I)
+    - echo 'INHERIT += "rm_work"' > build/conf/auto.conf
     - mkdir -p ~/ci-cache/{sstate-cache,downloads}
     - ln -sfn ~/ci-cache/sstate-cache build/
     - ln -sfn ~/ci-cache/downloads build/
     - source build/conf/setenv
+
+after_script:
+    - rm -rf build/tmp
+    - rm -rf build/cache
 
 qemux86:
     script:
