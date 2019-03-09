@@ -1,6 +1,9 @@
 variables:
     GIT_SUBMODULE_STRATEGY: recursive
 
+before_script:
+    - ./patches/apply.sh
+
 qemux86:
     script:
         - ./ci/run.py ${CI_BUILD_REF_SLUG}_$(date -I) qemux86
