@@ -1,9 +1,6 @@
 [submodule "meta-oryx"]
 	path = meta-oryx
 	url = https://gitlab.com/oryx/meta-oryx.git
-[submodule "build"]
-	path = build
-	url = https://gitlab.com/oryx/oryx-build.git
 [submodule "bitbake"]
 	path = bitbake
 	url = git://git.openembedded.org/bitbake

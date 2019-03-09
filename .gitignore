@@ -1,0 +1,12 @@
+/build/bitbake.lock
+/build/cache
+/build/conf/sanity_info
+/build/tmp*
+/build/downloads
+/build/sstate-cache
+/build/pub
+/build/buildhistory
+/ci/report.xml
+/.vscode
+__pycache__
+*.log
