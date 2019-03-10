@@ -7,15 +7,31 @@ before_script:
 qemux86:
     script:
         - ./ci/run.py ${CI_BUILD_REF_SLUG}_$(date -I) qemux86
+    artifacts:
+        paths:
+            - build/pub
+        expire_in: 1 week
 
 raspberrypi3:
     script:
         - ./ci/run.py ${CI_BUILD_REF_SLUG}_$(date -I) raspberrypi3
+    artifacts:
+        paths:
+            - build/pub
+        expire_in: 1 week
 
 raspberrypi3-64:
     script:
         - ./ci/run.py ${CI_BUILD_REF_SLUG}_$(date -I) raspberrypi3-64
+    artifacts:
+        paths:
+            - build/pub
+        expire_in: 1 week
 
 beaglebone-yocto:
     script:
         - ./ci/run.py ${CI_BUILD_REF_SLUG}_$(date -I) beaglebone-yocto
+    artifacts:
+        paths:
+            - build/pub
+        expire_in: 1 week
