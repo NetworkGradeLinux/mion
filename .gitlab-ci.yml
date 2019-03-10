@@ -42,3 +42,23 @@ beaglebone-yocto:
         paths:
             - build/pub
         expire_in: 1 week
+
+docs-html:
+    stage: build
+    script:
+        - cd docs
+        - make html
+    artifacts:
+        paths:
+            - docs/_build/html
+        expire_in: 1 week
+
+docs-pdf:
+    stage: build
+    script:
+        - cd docs
+        - make latexpdf
+    artifacts:
+        paths:
+            - docs/_build/latex/*.pdf
+        expire_in: 1 week
