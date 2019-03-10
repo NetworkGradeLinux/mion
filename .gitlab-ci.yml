@@ -1,21 +1,64 @@
 variables:
     GIT_SUBMODULE_STRATEGY: recursive
 
+stages:
+    - build
+
 before_script:
     - ./patches/apply.sh
 
 qemux86:
+    stage: build
     script:
         - ./ci/run.py ${CI_BUILD_REF_SLUG}_$(date -I) qemux86
+    artifacts:
+        paths:
+            - build/pub
+        expire_in: 1 week
 
 raspberrypi3:
+    stage: build
     script:
         - ./ci/run.py ${CI_BUILD_REF_SLUG}_$(date -I) raspberrypi3
+    artifacts:
+        paths:
+            - build/pub
+        expire_in: 1 week
 
 raspberrypi3-64:
+    stage: build
     script:
         - ./ci/run.py ${CI_BUILD_REF_SLUG}_$(date -I) raspberrypi3-64
+    artifacts:
+        paths:
+            - build/pub
+        expire_in: 1 week
 
 beaglebone-yocto:
+    stage: build
     script:
         - ./ci/run.py ${CI_BUILD_REF_SLUG}_$(date -I) beaglebone-yocto
+    artifacts:
+        paths:
+            - build/pub
+        expire_in: 1 week
+
+docs-html:
+    stage: build
+    script:
+        - cd docs
+        - make html
+    artifacts:
+        paths:
+            - docs/_build/html
+        expire_in: 1 week
+
+docs-pdf:
+    stage: build
+    script:
+        - cd docs
+        - make latexpdf
+    artifacts:
+        paths:
+            - docs/_build/latex/*.pdf
+        expire_in: 1 week
