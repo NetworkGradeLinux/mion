@@ -3,7 +3,7 @@
 set -e
 shopt -s nullglob
 
-REPOLIST="bitbake openembedded-core meta-openembedded meta-raspberrypi meta-virtualization meta-yocto"
+REPOLIST="bitbake openembedded-core meta-openembedded meta-raspberrypi meta-virtualization"
 PATCHES_DIR=$(realpath $(dirname $0))
 
 for repo in $REPOLIST; do

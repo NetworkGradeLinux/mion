@@ -16,6 +16,3 @@
 [submodule "meta-raspberrypi"]
 	path = meta-raspberrypi
 	url = https://github.com/agherzan/meta-raspberrypi.git
-[submodule "meta-yocto"]
-	path = meta-yocto
-	url = https://git.yoctoproject.org/git/meta-yocto
