@@ -7,10 +7,8 @@ import sys
 
 BUILDS = (
     # SYSTEM_PROFILE        APPLICATION_PROFILE
-    ( 'native'            , 'host'              ),
     ( 'native'            , 'host-test'         ),
     ( 'guest'             , 'minimal'           ),
-    ( 'guest'             , 'full-cmdline'      )
     )
 
 N_BUILDS = len(BUILDS)
