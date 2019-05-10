@@ -16,6 +16,33 @@ qemux86:
             - build/pub
         expire_in: 1 week
 
+qemux86-64:
+    stage: build
+    script:
+        - ./ci/run.py ${CI_BUILD_REF_SLUG}_$(date -I) qemux86-64
+    artifacts:
+        paths:
+            - build/pub
+        expire_in: 1 week
+
+qemuarm:
+    stage: build
+    script:
+        - ./ci/run.py ${CI_BUILD_REF_SLUG}_$(date -I) qemuarm
+    artifacts:
+        paths:
+            - build/pub
+        expire_in: 1 week
+
+qemuarm64:
+    stage: build
+    script:
+        - ./ci/run.py ${CI_BUILD_REF_SLUG}_$(date -I) qemuarm64
+    artifacts:
+        paths:
+            - build/pub
+        expire_in: 1 week
+
 raspberrypi3:
     stage: build
     script:

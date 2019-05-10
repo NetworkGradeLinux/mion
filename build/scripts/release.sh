@@ -22,9 +22,11 @@ do_oryx_full() {
 }
 
 do_oryx_full qemux86
+do_oryx_full qemux86-64
+do_oryx_full qemuarm
+do_oryx_full qemuarm64
 do_oryx_full raspberrypi3
 do_oryx_full raspberrypi3-64
-do_oryx_full beaglebone-yocto
 
 # Sync the relevant files from the downloads directory into a "sources"
 # directory
