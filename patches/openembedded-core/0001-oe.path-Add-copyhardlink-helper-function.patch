@@ -1,0 +1,52 @@
+From ce30a2667b79fbaf17b2973cf154bd795181c8e3 Mon Sep 17 00:00:00 2001
+From: Paul Barker <paul@betafive.co.uk>
+Date: Fri, 3 May 2019 11:54:47 +0000
+Subject: [PATCH 1/2] oe.path: Add copyhardlink() helper function
+
+This function creates hard links if possible, falling back to copying
+the file if the destination is on a different volume to the source.
+
+The docstring for copyhardlinktree() is also updated to make the
+difference between the two functions a little clearer.
+
+Signed-off-by: Paul Barker <paul@betafive.co.uk>
+Signed-off-by: Ross Burton <ross.burton@intel.com>
+Signed-off-by: Richard Purdie <richard.purdie@linuxfoundation.org>
+---
+ meta/lib/oe/path.py | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
+
+diff --git a/meta/lib/oe/path.py b/meta/lib/oe/path.py
+index 1e24d0586b..c09eda5c42 100644
+--- a/meta/lib/oe/path.py
++++ b/meta/lib/oe/path.py
+@@ -90,7 +90,7 @@ def copytree(src, dst):
+     subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
+ 
+ def copyhardlinktree(src, dst):
+-    """ Make the hard link when possible, otherwise copy. """
++    """Make a tree of hard links when possible, otherwise copy."""
+     bb.utils.mkdirhier(dst)
+     if os.path.isdir(src) and not len(os.listdir(src)):
+         return
+@@ -114,6 +114,17 @@ def copyhardlinktree(src, dst):
+     else:
+         copytree(src, dst)
+ 
++def copyhardlink(src, dst):
++    """Make a hard link when possible, otherwise copy."""
++
++    # We need to stat the destination directory as the destination file probably
++    # doesn't exist yet.
++    dstdir = os.path.dirname(dst)
++    if os.stat(src).st_dev == os.stat(dstdir).st_dev:
++        os.link(src, dst)
++    else:
++        shutil.copy(src, dst)
++
+ def remove(path, recurse=True):
+     """
+     Equivalent to rm -f or rm -rf
+-- 
+2.17.1
+
