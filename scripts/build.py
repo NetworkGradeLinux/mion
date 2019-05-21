@@ -56,8 +56,7 @@ def setup_env(args):
     os.environ['ORYX_SYSTEM_PROFILE'] = args.system_profile
     os.environ['ORYX_APPLICATION_PROFILE'] = args.application_profile
     os.environ['ORYX_BASE'] = args.oryx_base
-    os.environ['TOPDIR'] = os.path.join(args.oryx_base, 'build')
-    os.environ['BUILDDIR'] = os.environ['TOPDIR']
+    os.environ['BUILDDIR'] = os.path.join(args.oryx_base, 'build')
     os.environ['BB_ENV_EXTRAWHITE'] = env_whitelist
     os.environ['PATH'] = '%s:%s:%s' % (
         os.path.join(args.oryx_base, 'openembedded-core', 'scripts'),
@@ -72,7 +71,7 @@ def do_shell(machine):
 
     os.environ['MACHINE'] = machine
 
-    return subprocess.call('bash', cwd=os.environ['TOPDIR'])
+    return subprocess.call('bash', cwd=os.environ['BUILDDIR'])
 
 def do_build(args, machine):
     """Run a build using the configuration given in the args namespace"""
@@ -86,7 +85,7 @@ def do_build(args, machine):
 
     os.environ['MACHINE'] = machine
 
-    return subprocess.call("bitbake %s oryx-publish" % (bitbake_args), shell=True, cwd=os.environ['TOPDIR'])
+    return subprocess.call("bitbake %s oryx-publish" % (bitbake_args), shell=True, cwd=os.environ['BUILDDIR'])
 
 def parse_args():
     """Parse command line arguments into an args namespace"""
