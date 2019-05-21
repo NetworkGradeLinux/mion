@@ -96,7 +96,7 @@ def do_build(args, machine):
 
     os.environ['MACHINE'] = machine
 
-    return subprocess.call("bitbake %s oryx-publish" % (bitbake_args), shell=True, cwd=os.environ['BUILDDIR'])
+    return subprocess.call("bitbake %s oryx-image" % (bitbake_args), shell=True, cwd=os.environ['BUILDDIR'])
 
 def parse_args():
     """Parse command line arguments into an args namespace"""

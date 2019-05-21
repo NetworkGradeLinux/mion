@@ -13,7 +13,7 @@ qemux86:
         - ./ci/run.py ${CI_BUILD_REF_SLUG}_$(date -I) qemux86
     artifacts:
         paths:
-            - build/pub
+            - build/images
         expire_in: 1 week
 
 qemux86-64:
@@ -22,7 +22,7 @@ qemux86-64:
         - ./ci/run.py ${CI_BUILD_REF_SLUG}_$(date -I) qemux86-64
     artifacts:
         paths:
-            - build/pub
+            - build/images
         expire_in: 1 week
 
 qemuarm:
@@ -31,7 +31,7 @@ qemuarm:
         - ./ci/run.py ${CI_BUILD_REF_SLUG}_$(date -I) qemuarm
     artifacts:
         paths:
-            - build/pub
+            - build/images
         expire_in: 1 week
 
 qemuarm64:
@@ -40,7 +40,7 @@ qemuarm64:
         - ./ci/run.py ${CI_BUILD_REF_SLUG}_$(date -I) qemuarm64
     artifacts:
         paths:
-            - build/pub
+            - build/images
         expire_in: 1 week
 
 raspberrypi3:
@@ -49,7 +49,7 @@ raspberrypi3:
         - ./ci/run.py ${CI_BUILD_REF_SLUG}_$(date -I) raspberrypi3
     artifacts:
         paths:
-            - build/pub
+            - build/images
         expire_in: 1 week
 
 raspberrypi3-64:
@@ -58,7 +58,7 @@ raspberrypi3-64:
         - ./ci/run.py ${CI_BUILD_REF_SLUG}_$(date -I) raspberrypi3-64
     artifacts:
         paths:
-            - build/pub
+            - build/images
         expire_in: 1 week
 
 docs:
