@@ -59,7 +59,8 @@ def setup_env(args):
         'ORYX_SYSTEM_PROFILE',
         'ORYX_APPLICATION_PROFILE',
         'ORYX_VERSION',
-        'ORYX_OUTPUT_DIR'
+        'ORYX_OUTPUT_DIR',
+        'ORYX_RM_WORK'
         ])
 
     os.environ['ORYX_VERSION'] = args.build_version
@@ -67,6 +68,7 @@ def setup_env(args):
     os.environ['ORYX_APPLICATION_PROFILE'] = args.application_profile
     os.environ['ORYX_BASE'] = args.oryx_base
     os.environ['ORYX_OUTPUT_DIR'] = args.output_dir
+    os.environ['ORYX_RM_WORK'] = args.rm_work
     os.environ['BUILDDIR'] = os.path.join(args.oryx_base, 'build')
     os.environ['BB_ENV_EXTRAWHITE'] = env_whitelist
     os.environ['PATH'] = '%s:%s:%s' % (
@@ -131,6 +133,9 @@ def parse_args():
 
     parser.add_argument('--all-machines', action='store_true',
         help='Build for all supported machines')
+
+    parser.add_argument('--rm-work', action='store_const', const='1', default='0',
+        help='Remove temporary files after building each recipe to save disk space')
 
     args = parser.parse_args()
 
