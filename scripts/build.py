@@ -104,9 +104,6 @@ def parse_args():
     parser.add_argument('-M', '--machine', default='qemux86',
         help='Machine selection')
 
-    parser.add_argument('-C', '--clean', action='store_true',
-        help='Performs a clean build')
-
     parser.add_argument('-k', '--continue', dest='bitbake_continue', action='store_true',
         help='Continue as much as possible after an error')
 
@@ -120,10 +117,6 @@ def parse_args():
 
 def main():
     args = parse_args()
-
-    if args.clean and os.path.exists("tmp"):
-        msg(">>> Cleaning")
-        shutil.rmtree("tmp")
 
     setup_env(args)
 
