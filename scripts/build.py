@@ -11,9 +11,6 @@ import tarfile
 def msg(message):
     print(message, flush=True)
 
-def get_subfolder(args):
-    return "%s/%s/%s/%s/" % (args.build_version, args.machine, args.system_profile, args.application_profile)
-
 def setup_env(args):
     """Setup the environment variables required to invoke bitbake"""
 
@@ -82,33 +79,11 @@ def do_build(args):
     msg(">>> Building Oryx with ORYX_VERSION=%s MACHINE=%s SYSTEM_PROFILE=%s APPLICATION_PROFILE=%s"
             % (args.build_version, args.machine, args.system_profile, args.application_profile))
 
-    subfolder = get_subfolder(args)
-
     bitbake_args = ""
     if args.bitbake_continue:
         bitbake_args += " -k"
 
-    bitbake_status = subprocess.call("bitbake %s oryx-publish" % (bitbake_args), shell=True, cwd=os.environ['TOPDIR'])
-
-    # Copy the contents of the output files out of the tmp folder. The
-    # destination folder must not already exist for copytree to work.
-    folder = "tmp/deploy/oryx/" + subfolder
-    newfolder = "pub/" + subfolder
-    if os.path.exists(newfolder):
-        shutil.rmtree(newfolder)
-    if os.path.exists(folder):
-        shutil.copytree(folder, newfolder)
-    else:
-        # At least create an empty folder in case we need to create a FAILED
-        # file
-        os.makedirs(newfolder)
-
-    # Create FAILED file if bitbake failed
-    if bitbake_status != 0:
-        failedfile = "%s/FAILED" % (newfolder)
-        open(failedfile,'w')
-
-    return bitbake_status
+    return subprocess.call("bitbake %s oryx-publish" % (bitbake_args), shell=True, cwd=os.environ['TOPDIR'])
 
 def parse_args():
     """Parse command line arguments into an args namespace"""
