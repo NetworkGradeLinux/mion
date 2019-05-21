@@ -20,10 +20,57 @@ def run_build(args):
     msg(">>> Building Oryx with ORYX_VERSION=%s MACHINE=%s SYSTEM_PROFILE=%s APPLICATION_PROFILE=%s"
             % (args.version, args.machine, args.system_profile, args.application_profile))
 
+    env_whitelist = ' '.join([
+        # Network access control
+        'BB_NO_NETWORK',
+        'BB_SRCREV_POLICY',
+
+        # Parallelism
+        'BB_NUMBER_THREADS',
+        'PARALLEL_MAKE',
+
+        # SSH
+        'SSH_AGENT_PID',
+        'SSH_AUTH_SOCK',
+
+        # Proxy servers
+        'ALL_PROXY',
+        'FTPS_PROXY',
+        'FTP_PROXY',
+        'GIT_PROXY_COMMAND',
+        'HTTPS_PROXY',
+        'HTTP_PROXY',
+        'NO_PROXY',
+        'SOCKS5_PASSWD',
+        'SOCKS5_USER',
+        'all_proxy',
+        'ftp_proxy',
+        'ftps_proxy',
+        'http_proxy',
+        'https_proxy',
+        'no_proxy',
+
+        # Oryx configuration
+        'MACHINE',
+        'ORYX_BASE',
+        'ORYX_SYSTEM_PROFILE',
+        'ORYX_APPLICATION_PROFILE',
+        'ORYX_VERSION'
+        ])
+
     os.environ['ORYX_VERSION'] = args.version
     os.environ['MACHINE'] = args.machine
     os.environ['ORYX_SYSTEM_PROFILE'] = args.system_profile
     os.environ['ORYX_APPLICATION_PROFILE'] = args.application_profile
+    os.environ['ORYX_BASE'] = args.oryx_base
+    os.environ['TOPDIR'] = os.path.join(args.oryx_base, 'build')
+    os.environ['BUILDDIR'] = os.environ['TOPDIR']
+    os.environ['BB_ENV_EXTRAWHITE'] = env_whitelist
+    os.environ['PATH'] = '%s:%s:%s' % (
+        os.path.join(args.oryx_base, 'openembedded-core', 'scripts'),
+        os.path.join(args.oryx_base, 'bitbake', 'bin'),
+        os.environ['PATH']
+        )
 
     subfolder = get_subfolder(args)
 
@@ -31,7 +78,7 @@ def run_build(args):
     if args.bitbake_continue:
         bitbake_args += " -k"
 
-    bitbake_status = subprocess.call("bitbake %s oryx-publish" % (bitbake_args), shell=True)
+    bitbake_status = subprocess.call("bitbake %s oryx-publish" % (bitbake_args), shell=True, cwd=os.environ['TOPDIR'])
 
     # Copy the contents of the output files out of the tmp folder. The
     # destination folder must not already exist for copytree to work.
@@ -94,6 +141,9 @@ def parse_args():
 
     parser.add_argument("-k", "--continue", dest="bitbake_continue", action="store_true",
             help="Continue as much as possible after an error")
+
+    parser.add_argument("--oryx-base", default=os.getcwd(),
+        help="Base directory of the Oryx source tree, defaults to current working directory")
 
     return parser.parse_args()
 

@@ -30,7 +30,7 @@ def prepare():
     shutil.copyfile('ci/auto.conf', 'build/conf/auto.conf')
 
 def run_build(version, machine, sys_profile, app_profile):
-    script = 'source build/conf/setenv && ./scripts/run-build.py -k -V %s -M %s -S %s -A %s' % (
+    script = './scripts/run-build.py -k -V %s -M %s -S %s -A %s' % (
         version, machine, sys_profile, app_profile)
     cp = subprocess.run(script, shell=True, executable='/bin/bash')
     return cp.returncode
