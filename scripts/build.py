@@ -53,7 +53,6 @@ def setup_env(args):
         ])
 
     os.environ['ORYX_VERSION'] = args.build_version
-    os.environ['MACHINE'] = args.machine
     os.environ['ORYX_SYSTEM_PROFILE'] = args.system_profile
     os.environ['ORYX_APPLICATION_PROFILE'] = args.application_profile
     os.environ['ORYX_BASE'] = args.oryx_base
@@ -66,22 +65,26 @@ def setup_env(args):
         os.environ['PATH']
         )
 
-def do_shell():
+def do_shell(machine):
     """Start a shell where a user can run bitbake"""
 
     msg(">>> Entering Oryx development shell...")
 
+    os.environ['MACHINE'] = machine
+
     return subprocess.call('bash', cwd=os.environ['TOPDIR'])
 
-def do_build(args):
+def do_build(args, machine):
     """Run a build using the configuration given in the args namespace"""
 
     msg(">>> Building Oryx with ORYX_VERSION=%s MACHINE=%s SYSTEM_PROFILE=%s APPLICATION_PROFILE=%s"
-            % (args.build_version, args.machine, args.system_profile, args.application_profile))
+            % (args.build_version, machine, args.system_profile, args.application_profile))
 
     bitbake_args = ""
     if args.bitbake_continue:
         bitbake_args += " -k"
+
+    os.environ['MACHINE'] = machine
 
     return subprocess.call("bitbake %s oryx-publish" % (bitbake_args), shell=True, cwd=os.environ['TOPDIR'])
 
@@ -101,7 +104,7 @@ def parse_args():
     parser.add_argument('-A', '--application-profile', default='minimal',
         help='Application profile selection')
 
-    parser.add_argument('-M', '--machine', default='qemux86',
+    parser.add_argument('-M', '--machine', action='append', dest='machine_list',
         help='Machine selection')
 
     parser.add_argument('-k', '--continue', dest='bitbake_continue', action='store_true',
@@ -113,7 +116,16 @@ def parse_args():
     parser.add_argument('--shell', action='store_true',
         help='Start a development shell instead of running bitbake directly')
 
-    return parser.parse_args()
+    args = parser.parse_args()
+
+    # If we set a default value above for the machines list, argparse will add
+    # any user specified machines to the list instead of replacing the default.
+    # So instead let's set the default here if the user didn't give us any
+    # machines.
+    if not args.machine_list:
+        args.machine_list = ['qemux86']
+
+    return args
 
 def main():
     args = parse_args()
@@ -121,10 +133,16 @@ def main():
     setup_env(args)
 
     if args.shell:
-        exitcode = do_shell()
+        if len(args.machine_list) > 1:
+            msg("ERROR: Can't invoke a development shell for more than one machine")
+            return 1
+        return do_shell(args.machine_list[0])
     else:
-        exitcode = do_build(args)
+        exitcode = 0
+        for machine in args.machine_list:
+            r = do_build(args, machine)
+            exitcode |= r
+        return exitcode
 
-    sys.exit(exitcode)
-
-main()
+exitcode = main()
+sys.exit(exitcode)
