@@ -12,7 +12,7 @@ def msg(message):
     print(message, flush=True)
 
 def get_subfolder(args):
-    return "%s/%s/%s/%s/" % (args.version, args.machine, args.system_profile, args.application_profile)
+    return "%s/%s/%s/%s/" % (args.build_version, args.machine, args.system_profile, args.application_profile)
 
 def setup_env(args):
     """Setup the environment variables required to invoke bitbake"""
@@ -55,7 +55,7 @@ def setup_env(args):
         'ORYX_VERSION'
         ])
 
-    os.environ['ORYX_VERSION'] = args.version
+    os.environ['ORYX_VERSION'] = args.build_version
     os.environ['MACHINE'] = args.machine
     os.environ['ORYX_SYSTEM_PROFILE'] = args.system_profile
     os.environ['ORYX_APPLICATION_PROFILE'] = args.application_profile
@@ -80,7 +80,7 @@ def do_build(args):
     """Run a build using the configuration given in the args namespace"""
 
     msg(">>> Building Oryx with ORYX_VERSION=%s MACHINE=%s SYSTEM_PROFILE=%s APPLICATION_PROFILE=%s"
-            % (args.version, args.machine, args.system_profile, args.application_profile))
+            % (args.build_version, args.machine, args.system_profile, args.application_profile))
 
     subfolder = get_subfolder(args)
 
@@ -130,33 +130,35 @@ def parse_args():
     """Parse command line arguments into an args namespace"""
 
     parser = argparse.ArgumentParser(
-            description="Build script for Oryx Embedded Linux"
-            )
+        description='Build script for Oryx Embedded Linux'
+        )
 
-    parser.add_argument("-V", dest="version", metavar="VERSION", default="dev",
-            help="Version string used to identify this build")
+    parser.add_argument('-V', '--build-version', default='dev',
+        help='Version string used to identify this build')
 
-    parser.add_argument("-S", dest="system_profile", metavar="SYSTEM_PROFILE", default="native",
-            help="System profile selection")
+    parser.add_argument('-S', '--system-profile', default='native',
+        help='System profile selection')
 
-    parser.add_argument("-A", dest="application_profile", metavar="APPLICATION_PROFILE", default="minimal",
-            help="Application profile selection")
+    parser.add_argument('-A', '--application-profile', default='minimal',
+        help='Application profile selection')
 
-    parser.add_argument("-M", dest="machine", metavar="MACHINE", default="qemux86",
-            help="Machine selection")
+    parser.add_argument('-M', '--machine', default='qemux86',
+        help='Machine selection')
 
-    parser.add_argument("-C", "--clean", help="Performs a clean build", action="store_true")
+    parser.add_argument('-C', '--clean', action='store_true',
+        help='Performs a clean build')
 
-    parser.add_argument("-L", "--logs", help="Captures and archives log files", action="store_true")
+    parser.add_argument('-L', '--logs', action='store_true',
+        help='Captures and archives log files')
 
-    parser.add_argument("-k", "--continue", dest="bitbake_continue", action="store_true",
-            help="Continue as much as possible after an error")
+    parser.add_argument('-k', '--continue', dest='bitbake_continue', action='store_true',
+        help='Continue as much as possible after an error')
 
-    parser.add_argument("--oryx-base", default=os.getcwd(),
-        help="Base directory of the Oryx source tree, defaults to current working directory")
+    parser.add_argument('--oryx-base', default=os.getcwd(),
+        help='Base directory of the Oryx source tree, defaults to current working directory')
 
-    parser.add_argument("--shell", action="store_true",
-        help="Start a development shell instead of running bitbake directly")
+    parser.add_argument('--shell', action='store_true',
+        help='Start a development shell instead of running bitbake directly')
 
     return parser.parse_args()
 
