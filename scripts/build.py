@@ -14,11 +14,8 @@ def msg(message):
 def get_subfolder(args):
     return "%s/%s/%s/%s/" % (args.version, args.machine, args.system_profile, args.application_profile)
 
-def run_build(args):
-    """Run a build using the configuration given in the args namespace"""
-
-    msg(">>> Building Oryx with ORYX_VERSION=%s MACHINE=%s SYSTEM_PROFILE=%s APPLICATION_PROFILE=%s"
-            % (args.version, args.machine, args.system_profile, args.application_profile))
+def setup_env(args):
+    """Setup the environment variables required to invoke bitbake"""
 
     env_whitelist = ' '.join([
         # Network access control
@@ -71,6 +68,19 @@ def run_build(args):
         os.path.join(args.oryx_base, 'bitbake', 'bin'),
         os.environ['PATH']
         )
+
+def do_shell():
+    """Start a shell where a user can run bitbake"""
+
+    msg(">>> Entering Oryx development shell...")
+
+    return subprocess.call('bash', cwd=os.environ['TOPDIR'])
+
+def do_build(args):
+    """Run a build using the configuration given in the args namespace"""
+
+    msg(">>> Building Oryx with ORYX_VERSION=%s MACHINE=%s SYSTEM_PROFILE=%s APPLICATION_PROFILE=%s"
+            % (args.version, args.machine, args.system_profile, args.application_profile))
 
     subfolder = get_subfolder(args)
 
@@ -145,6 +155,9 @@ def parse_args():
     parser.add_argument("--oryx-base", default=os.getcwd(),
         help="Base directory of the Oryx source tree, defaults to current working directory")
 
+    parser.add_argument("--shell", action="store_true",
+        help="Start a development shell instead of running bitbake directly")
+
     return parser.parse_args()
 
 def main():
@@ -154,11 +167,16 @@ def main():
         msg(">>> Cleaning")
         shutil.rmtree("tmp")
 
-    exitcode = run_build(args)
+    setup_env(args)
 
-    if args.logs:
-        msg(">>> Capturing logs")
-        capture_logs(args)
+    if args.shell:
+        exitcode = do_shell()
+    else:
+        exitcode = do_build(args)
+
+        if args.logs:
+            msg(">>> Capturing logs")
+            capture_logs(args)
 
     sys.exit(exitcode)
 
