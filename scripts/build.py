@@ -8,6 +8,15 @@ import shutil
 import sys
 import tarfile
 
+ALL_SUPPORTED_MACHINES = [
+    'qemux86',
+    'qemux86-64',
+    'qemuarm',
+    'qemuarm64',
+    'raspberrypi3',
+    'raspberrypi3-64'
+]
+
 def msg(message):
     print(message, flush=True)
 
@@ -120,7 +129,17 @@ def parse_args():
     parser.add_argument('-o', '--output-dir',
         help='Output directory for final artifacts, defaults to `$BUILDDIR/images`')
 
+    parser.add_argument('--all-machines', action='store_true',
+        help='Build for all supported machines')
+
     args = parser.parse_args()
+
+    # Handle --all-machines
+    if args.machine_list and args.all_machines:
+        msg("ERROR: Can't combine --all-machines and --machine options")
+        sys.exit(1)
+    if args.all_machines:
+        args.machine_list = ALL_SUPPORTED_MACHINES
 
     # If we set a default value above for the machines list, argparse will add
     # any user specified machines to the list instead of replacing the default.
