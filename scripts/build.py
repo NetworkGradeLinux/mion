@@ -53,6 +53,10 @@ def setup_env(args):
         'https_proxy',
         'no_proxy',
 
+        # Downloads and sstate locations
+        'DL_DIR',
+        'SSTATE_DIR',
+
         # Oryx configuration
         'MACHINE',
         'ORYX_BASE',
@@ -76,6 +80,11 @@ def setup_env(args):
         os.path.join(args.oryx_base, 'bitbake', 'bin'),
         os.environ['PATH']
         )
+
+    if args.dl_dir:
+        os.environ['DL_DIR'] = args.dl_dir
+    if args.sstate_dir:
+        os.environ['SSTATE_DIR'] = args.sstate_dir
 
 def do_shell(machine):
     """Start a shell where a user can run bitbake"""
@@ -136,6 +145,12 @@ def parse_args():
 
     parser.add_argument('--rm-work', action='store_const', const='1', default='0',
         help='Remove temporary files after building each recipe to save disk space')
+
+    parser.add_argument('--dl-dir',
+        help='Override path for downloads directory')
+
+    parser.add_argument('--sstate-dir',
+        help='Override path for sstate cache directory')
 
     args = parser.parse_args()
 
