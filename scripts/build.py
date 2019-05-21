@@ -110,22 +110,6 @@ def do_build(args):
 
     return bitbake_status
 
-def capture_logs(args):
-    """Capture log files and archive them"""
-
-    directorylist = ['tmp/work/*/*/*/temp/run.*', 'tmp/work/*/*/*/temp/log.*', 'tmp/log/*']
-    globlist = []
-    for directory in directorylist:
-        for filename in glob.iglob(directory):
-            globlist.append(filename)
-
-    subfolder = get_subfolder(args)
-    tarlocation = "pub/%s/logs.tar.gz" % (subfolder)
-    tar = tarfile.open(tarlocation, "w:gz")
-    for item in globlist:
-        tar.add(item)
-    tar.close()
-
 def parse_args():
     """Parse command line arguments into an args namespace"""
 
@@ -147,9 +131,6 @@ def parse_args():
 
     parser.add_argument('-C', '--clean', action='store_true',
         help='Performs a clean build')
-
-    parser.add_argument('-L', '--logs', action='store_true',
-        help='Captures and archives log files')
 
     parser.add_argument('-k', '--continue', dest='bitbake_continue', action='store_true',
         help='Continue as much as possible after an error')
@@ -175,10 +156,6 @@ def main():
         exitcode = do_shell()
     else:
         exitcode = do_build(args)
-
-        if args.logs:
-            msg(">>> Capturing logs")
-            capture_logs(args)
 
     sys.exit(exitcode)
 
