@@ -49,13 +49,15 @@ def setup_env(args):
         'ORYX_BASE',
         'ORYX_SYSTEM_PROFILE',
         'ORYX_APPLICATION_PROFILE',
-        'ORYX_VERSION'
+        'ORYX_VERSION',
+        'ORYX_OUTPUT_DIR'
         ])
 
     os.environ['ORYX_VERSION'] = args.build_version
     os.environ['ORYX_SYSTEM_PROFILE'] = args.system_profile
     os.environ['ORYX_APPLICATION_PROFILE'] = args.application_profile
     os.environ['ORYX_BASE'] = args.oryx_base
+    os.environ['ORYX_OUTPUT_DIR'] = args.output_dir
     os.environ['BUILDDIR'] = os.path.join(args.oryx_base, 'build')
     os.environ['BB_ENV_EXTRAWHITE'] = env_whitelist
     os.environ['PATH'] = '%s:%s:%s' % (
@@ -115,6 +117,9 @@ def parse_args():
     parser.add_argument('--shell', action='store_true',
         help='Start a development shell instead of running bitbake directly')
 
+    parser.add_argument('-o', '--output-dir',
+        help='Output directory for final artifacts, defaults to `$BUILDDIR/images`')
+
     args = parser.parse_args()
 
     # If we set a default value above for the machines list, argparse will add
@@ -123,6 +128,11 @@ def parse_args():
     # machines.
     if not args.machine_list:
         args.machine_list = ['qemux86']
+
+    # The default value for the output directory depends on the Oryx base
+    # directory so we need to set it after arguments are parsed.
+    if not args.output_dir:
+        args.output_dir = os.path.join(args.oryx_base, 'build', 'images')
 
     return args
 
