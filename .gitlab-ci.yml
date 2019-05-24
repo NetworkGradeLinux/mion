@@ -10,6 +10,7 @@ before_script:
 after_script:
     - rm -rf build/tmp
     - rm -rf build/cache
+    - rm -rf docs/_build
 
 docs:
     stage: build
