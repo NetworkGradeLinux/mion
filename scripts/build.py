@@ -192,7 +192,7 @@ def parse_args():
     parser.add_argument('-A', '--application-profile', default='minimal',
         help='Application profile selection')
 
-    parser.add_argument('-M', '--machine', action='append', dest='machine_list',
+    parser.add_argument('-M', '--machine', action='append', dest='machine_list', default=[],
         help='Machine selection')
 
     parser.add_argument('-k', '--continue', dest='bitbake_continue', action='store_true',
@@ -236,13 +236,6 @@ def parse_args():
         sys.exit(1)
     if args.all_machines:
         args.machine_list = ALL_SUPPORTED_MACHINES
-
-    # If we set a default value above for the machines list, argparse will add
-    # any user specified machines to the list instead of replacing the default.
-    # So instead let's set the default here if the user didn't give us any
-    # machines.
-    if not args.machine_list:
-        args.machine_list = ['qemux86']
 
     # The default value for the output directory depends on the Oryx base
     # directory so we need to set it after arguments are parsed.
