@@ -225,7 +225,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'OryxLinux-%s.tex' % (version),
+    (master_doc, 'oryx-docs.tex',
         u'Oryx Linux Documentation',
         u'Togán Labs', 'manual'),
 ]
