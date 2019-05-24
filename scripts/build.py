@@ -123,6 +123,20 @@ def do_source_archive(args):
     cmd = ['git', 'archive-all', '--prefix', archive_stem, dest]
     return subprocess.call(cmd)
 
+def do_checksum(args):
+    exitcode = 0
+
+    for root, dirs, files in os.walk(args.output_dir):
+        if 'SHA256SUMS' in files:
+            files.remove('SHA256SUMS')
+        if len(files):
+            sha256sums_path = os.path.join(root, 'SHA256SUMS')
+            with open(sha256sums_path, 'w') as f:
+                cmd = ['sha256sum'] + files
+                exitcode |= subprocess.call(cmd, cwd=root, stdout=f)
+
+    return exitcode
+
 def parse_args():
     """Parse command line arguments into an args namespace"""
 
@@ -169,6 +183,9 @@ def parse_args():
     parser.add_argument('--source-archive', action='store_true',
         help='Create an archive of the Oryx Project sources (bitbake, layers, build config & scripts)')
 
+    parser.add_argument('--checksum', action='store_true',
+        help='Create checksums for all build artifacts (used for Oryx releases)')
+
     args = parser.parse_args()
 
     # Handle --all-machines
@@ -210,6 +227,9 @@ def main():
 
         if args.source_archive:
             exitcode |= do_source_archive(args)
+
+        if args.checksum:
+            exitcode |= do_checksum(args)
 
         return exitcode
 
