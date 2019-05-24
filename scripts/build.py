@@ -242,6 +242,14 @@ def parse_args():
     if not args.output_dir:
         args.output_dir = os.path.join(args.oryx_base, 'build', 'images')
 
+    if len(args.machine_list) != 1 and args.shell:
+        msg('ERROR: --shell requires exactly one machine to be specified')
+        sys.exit(1)
+
+    if len(args.machine_list) == 0 and not args.docs and not args.source_archive and not args.checksum:
+        msg('ERROR: Nothing to do. Please specify at least one machine or one of --docs, --source-archive or --checksum')
+        sys.exit(1)
+
     return args
 
 def main():
@@ -250,9 +258,6 @@ def main():
     setup_env(args)
 
     if args.shell:
-        if len(args.machine_list) > 1:
-            msg("ERROR: Can't invoke a development shell for more than one machine")
-            return 1
         return do_shell(args.machine_list[0])
     else:
         exitcode = 0
