@@ -137,6 +137,45 @@ def do_checksum(args):
 
     return exitcode
 
+def do_docs_html(docs_path, output_path):
+    html_build_path = os.path.join(docs_path, '_build', 'html')
+    html_output_path = os.path.join(output_path, 'oryx-docs-html.tar.gz')
+
+    cmd = ['make', 'html']
+    exitcode = subprocess.call(cmd, cwd=docs_path)
+    if exitcode != 0:
+        return exitcode
+
+    with tarfile.open(html_output_path, 'w:gz') as tf:
+        tf.add(html_build_path, arcname='oryx-docs-html')
+
+    return 0
+
+def do_docs_pdf(docs_path, output_path):
+    pdf_build_path = os.path.join(docs_path, '_build', 'latex', 'oryx-docs.pdf')
+
+    cmd = ['make', 'latexpdf']
+    exitcode = subprocess.call(cmd, cwd=docs_path)
+    if exitcode != 0:
+        return exitcode
+
+    shutil.copy(pdf_build_path, output_path)
+
+    return 0
+
+def do_docs(args):
+    exitcode = 0
+
+    docs_path = os.path.join(args.oryx_base, 'docs')
+    output_path = os.path.join(args.output_dir, 'docs')
+
+    os.makedirs(output_path, exist_ok=True)
+
+    exitcode |= do_docs_html(docs_path, output_path)
+    exitcode |= do_docs_pdf(docs_path, output_path)
+
+    return exitcode
+
 def parse_args():
     """Parse command line arguments into an args namespace"""
 
@@ -179,6 +218,9 @@ def parse_args():
 
     parser.add_argument('--sstate-dir',
         help='Override path for sstate cache directory')
+
+    parser.add_argument('--docs', action='store_true',
+        help='Build documentation')
 
     parser.add_argument('--source-archive', action='store_true',
         help='Create an archive of the Oryx Project sources (bitbake, layers, build config & scripts)')
@@ -224,6 +266,9 @@ def main():
         for machine in args.machine_list:
             r = do_build(args, machine)
             exitcode |= r
+
+        if args.docs:
+            exitcode |= do_docs(args)
 
         if args.source_archive:
             exitcode |= do_source_archive(args)
