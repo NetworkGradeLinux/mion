@@ -109,6 +109,20 @@ def do_build(args, machine):
 
     return subprocess.call("bitbake %s oryx-image" % (bitbake_args), shell=True, cwd=os.environ['BUILDDIR'])
 
+def do_source_archive(args):
+    # Confirm presence of `git archive-all` handler as it's not commonly
+    # installed.
+    if not shutil.which('git-archive-all'):
+        msg("ERROR: Can't create a source archive without `git-archive-all`")
+        msg('The command `git-archive-all` can be installed via pip, see https://pypi.org/project/git-archive-all/')
+        sys.exit(1)
+
+    archive_stem = 'oryx-%s' % (args.build_version)
+    archive_fname = '%s.tar.xz' % (archive_stem)
+    dest = os.path.join(args.output_dir, archive_fname)
+    cmd = ['git', 'archive-all', '--prefix', archive_stem, dest]
+    return subprocess.call(cmd)
+
 def parse_args():
     """Parse command line arguments into an args namespace"""
 
@@ -152,6 +166,9 @@ def parse_args():
     parser.add_argument('--sstate-dir',
         help='Override path for sstate cache directory')
 
+    parser.add_argument('--source-archive', action='store_true',
+        help='Create an archive of the Oryx Project sources (bitbake, layers, build config & scripts)')
+
     args = parser.parse_args()
 
     # Handle --all-machines
@@ -190,6 +207,10 @@ def main():
         for machine in args.machine_list:
             r = do_build(args, machine)
             exitcode |= r
+
+        if args.source_archive:
+            exitcode |= do_source_archive(args)
+
         return exitcode
 
 exitcode = main()
