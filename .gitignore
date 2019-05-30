@@ -1,11 +1,8 @@
-/build/bitbake.lock
-/build/cache
-/build/conf/sanity_info
-/build/tmp*
-/build/downloads
-/build/sstate-cache
-/build/pub
-/build/buildhistory
+/build/*
+!/build/conf
+/build/conf/*
+!/build/conf/bblayers.conf
+!/build/conf/local.conf
 /ci/report.xml
 /docs/_build
 /.vscode
