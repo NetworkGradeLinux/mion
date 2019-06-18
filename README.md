@@ -8,23 +8,24 @@ Quickstart
 ----------
 
 1) Follow the Yocto Project Quick Start guide (available from
-   https://www.yoctoproject.org/docs/2.5.1/brief-yoctoprojectqs/brief-yoctoprojectqs.html)
+   https://www.yoctoproject.org/docs/2.7/brief-yoctoprojectqs/brief-yoctoprojectqs.html)
    to ensure that your system is capable of building images using The Yocto
    Project.
 
-2) Prepare the environment for an Oryx Linux build as follows:
+2) Build a minimal guest image for a supported platform such as a Raspberry Pi 3
+   as follows:
 
-    source build/conf/setenv
+        ./scripts/build.py -M raspberrypi3 -S guest -A minimal
 
-3) Build a minimal image for a supported platform such as a Raspberry Pi 3 as
-   follows:
+3) Build a host image for the same platform as follows:
 
-    ./scripts/run-build.py -M raspberrypi3
+        ./scripts/build.py -M raspberrypi3 -S native -A host
 
-4) Run bitbake commands directly if needed, for example to build just the Linux
-   kernel for a Raspberry Pi device, as follows:
+4) Start a shell to run bitbake commands directly if needed, for example to
+   build just the Linux kernel for a Raspberry Pi device, as follows:
 
-    MACHINE=raspberrypi3 bitbake linux-raspberrypi
+        ./scripts/build.py -M raspberrypi3 --shell
+        bitbake linux-raspberrypi
 
 Documentation
 -------------

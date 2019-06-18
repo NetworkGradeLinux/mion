@@ -8,11 +8,17 @@ import shutil
 import sys
 import tarfile
 
+ALL_SUPPORTED_MACHINES = [
+    'qemux86',
+    'qemux86-64',
+    'qemuarm',
+    'qemuarm64',
+    'raspberrypi3',
+    'raspberrypi3-64'
+]
+
 def msg(message):
     print(message, flush=True)
-
-def get_subfolder(args):
-    return "%s/%s/%s/%s/" % (args.build_version, args.machine, args.system_profile, args.application_profile)
 
 def setup_env(args):
     """Setup the environment variables required to invoke bitbake"""
@@ -47,21 +53,27 @@ def setup_env(args):
         'https_proxy',
         'no_proxy',
 
+        # Downloads and sstate locations
+        'DL_DIR',
+        'SSTATE_DIR',
+
         # Oryx configuration
         'MACHINE',
         'ORYX_BASE',
         'ORYX_SYSTEM_PROFILE',
         'ORYX_APPLICATION_PROFILE',
-        'ORYX_VERSION'
+        'ORYX_VERSION',
+        'ORYX_OUTPUT_DIR',
+        'ORYX_RM_WORK'
         ])
 
     os.environ['ORYX_VERSION'] = args.build_version
-    os.environ['MACHINE'] = args.machine
     os.environ['ORYX_SYSTEM_PROFILE'] = args.system_profile
     os.environ['ORYX_APPLICATION_PROFILE'] = args.application_profile
     os.environ['ORYX_BASE'] = args.oryx_base
-    os.environ['TOPDIR'] = os.path.join(args.oryx_base, 'build')
-    os.environ['BUILDDIR'] = os.environ['TOPDIR']
+    os.environ['ORYX_OUTPUT_DIR'] = args.output_dir
+    os.environ['ORYX_RM_WORK'] = args.rm_work
+    os.environ['BUILDDIR'] = os.path.join(args.oryx_base, 'build')
     os.environ['BB_ENV_EXTRAWHITE'] = env_whitelist
     os.environ['PATH'] = '%s:%s:%s' % (
         os.path.join(args.oryx_base, 'openembedded-core', 'scripts'),
@@ -69,62 +81,100 @@ def setup_env(args):
         os.environ['PATH']
         )
 
-def do_shell():
+    if args.dl_dir:
+        os.environ['DL_DIR'] = args.dl_dir
+    if args.sstate_dir:
+        os.environ['SSTATE_DIR'] = args.sstate_dir
+
+def do_shell(machine):
     """Start a shell where a user can run bitbake"""
 
     msg(">>> Entering Oryx development shell...")
 
-    return subprocess.call('bash', cwd=os.environ['TOPDIR'])
+    os.environ['MACHINE'] = machine
 
-def do_build(args):
+    return subprocess.call('bash', cwd=os.environ['BUILDDIR'])
+
+def do_build(args, machine):
     """Run a build using the configuration given in the args namespace"""
 
     msg(">>> Building Oryx with ORYX_VERSION=%s MACHINE=%s SYSTEM_PROFILE=%s APPLICATION_PROFILE=%s"
-            % (args.build_version, args.machine, args.system_profile, args.application_profile))
-
-    subfolder = get_subfolder(args)
+            % (args.build_version, machine, args.system_profile, args.application_profile))
 
     bitbake_args = ""
     if args.bitbake_continue:
         bitbake_args += " -k"
 
-    bitbake_status = subprocess.call("bitbake %s oryx-publish" % (bitbake_args), shell=True, cwd=os.environ['TOPDIR'])
+    os.environ['MACHINE'] = machine
 
-    # Copy the contents of the output files out of the tmp folder. The
-    # destination folder must not already exist for copytree to work.
-    folder = "tmp/deploy/oryx/" + subfolder
-    newfolder = "pub/" + subfolder
-    if os.path.exists(newfolder):
-        shutil.rmtree(newfolder)
-    if os.path.exists(folder):
-        shutil.copytree(folder, newfolder)
-    else:
-        # At least create an empty folder in case we need to create a FAILED
-        # file
-        os.makedirs(newfolder)
+    return subprocess.call("bitbake %s oryx-image" % (bitbake_args), shell=True, cwd=os.environ['BUILDDIR'])
 
-    # Create FAILED file if bitbake failed
-    if bitbake_status != 0:
-        failedfile = "%s/FAILED" % (newfolder)
-        open(failedfile,'w')
+def do_source_archive(args):
+    # Confirm presence of `git archive-all` handler as it's not commonly
+    # installed.
+    if not shutil.which('git-archive-all'):
+        msg("ERROR: Can't create a source archive without `git-archive-all`")
+        msg('The command `git-archive-all` can be installed via pip, see https://pypi.org/project/git-archive-all/')
+        sys.exit(1)
 
-    return bitbake_status
+    archive_stem = 'oryx-%s' % (args.build_version)
+    archive_fname = '%s.tar.xz' % (archive_stem)
+    dest = os.path.join(args.output_dir, archive_fname)
+    cmd = ['git', 'archive-all', '--prefix', archive_stem, dest]
+    return subprocess.call(cmd)
 
-def capture_logs(args):
-    """Capture log files and archive them"""
+def do_checksum(args):
+    exitcode = 0
 
-    directorylist = ['tmp/work/*/*/*/temp/run.*', 'tmp/work/*/*/*/temp/log.*', 'tmp/log/*']
-    globlist = []
-    for directory in directorylist:
-        for filename in glob.iglob(directory):
-            globlist.append(filename)
+    for root, dirs, files in os.walk(args.output_dir):
+        if 'SHA256SUMS' in files:
+            files.remove('SHA256SUMS')
+        if len(files):
+            sha256sums_path = os.path.join(root, 'SHA256SUMS')
+            with open(sha256sums_path, 'w') as f:
+                cmd = ['sha256sum'] + files
+                exitcode |= subprocess.call(cmd, cwd=root, stdout=f)
 
-    subfolder = get_subfolder(args)
-    tarlocation = "pub/%s/logs.tar.gz" % (subfolder)
-    tar = tarfile.open(tarlocation, "w:gz")
-    for item in globlist:
-        tar.add(item)
-    tar.close()
+    return exitcode
+
+def do_docs_html(docs_path, output_path):
+    html_build_path = os.path.join(docs_path, '_build', 'html')
+    html_output_path = os.path.join(output_path, 'oryx-docs-html.tar.gz')
+
+    cmd = ['make', 'html']
+    exitcode = subprocess.call(cmd, cwd=docs_path)
+    if exitcode != 0:
+        return exitcode
+
+    with tarfile.open(html_output_path, 'w:gz') as tf:
+        tf.add(html_build_path, arcname='oryx-docs-html')
+
+    return 0
+
+def do_docs_pdf(docs_path, output_path):
+    pdf_build_path = os.path.join(docs_path, '_build', 'latex', 'oryx-docs.pdf')
+
+    cmd = ['make', 'latexpdf']
+    exitcode = subprocess.call(cmd, cwd=docs_path)
+    if exitcode != 0:
+        return exitcode
+
+    shutil.copy(pdf_build_path, output_path)
+
+    return 0
+
+def do_docs(args):
+    exitcode = 0
+
+    docs_path = os.path.join(args.oryx_base, 'docs')
+    output_path = os.path.join(args.output_dir, 'docs')
+
+    os.makedirs(output_path, exist_ok=True)
+
+    exitcode |= do_docs_html(docs_path, output_path)
+    exitcode |= do_docs_pdf(docs_path, output_path)
+
+    return exitcode
 
 def parse_args():
     """Parse command line arguments into an args namespace"""
@@ -142,14 +192,8 @@ def parse_args():
     parser.add_argument('-A', '--application-profile', default='minimal',
         help='Application profile selection')
 
-    parser.add_argument('-M', '--machine', default='qemux86',
+    parser.add_argument('-M', '--machine', action='append', dest='machine_list', default=[],
         help='Machine selection')
-
-    parser.add_argument('-C', '--clean', action='store_true',
-        help='Performs a clean build')
-
-    parser.add_argument('-L', '--logs', action='store_true',
-        help='Captures and archives log files')
 
     parser.add_argument('-k', '--continue', dest='bitbake_continue', action='store_true',
         help='Continue as much as possible after an error')
@@ -160,26 +204,77 @@ def parse_args():
     parser.add_argument('--shell', action='store_true',
         help='Start a development shell instead of running bitbake directly')
 
-    return parser.parse_args()
+    parser.add_argument('-o', '--output-dir',
+        help='Output directory for final artifacts, defaults to `$BUILDDIR/images`')
+
+    parser.add_argument('--all-machines', action='store_true',
+        help='Build for all supported machines')
+
+    parser.add_argument('--rm-work', action='store_const', const='1', default='0',
+        help='Remove temporary files after building each recipe to save disk space')
+
+    parser.add_argument('--dl-dir',
+        help='Override path for downloads directory')
+
+    parser.add_argument('--sstate-dir',
+        help='Override path for sstate cache directory')
+
+    parser.add_argument('--docs', action='store_true',
+        help='Build documentation')
+
+    parser.add_argument('--source-archive', action='store_true',
+        help='Create an archive of the Oryx Project sources (bitbake, layers, build config & scripts)')
+
+    parser.add_argument('--checksum', action='store_true',
+        help='Create checksums for all build artifacts (used for Oryx releases)')
+
+    args = parser.parse_args()
+
+    # Handle --all-machines
+    if args.machine_list and args.all_machines:
+        msg("ERROR: Can't combine --all-machines and --machine options")
+        sys.exit(1)
+    if args.all_machines:
+        args.machine_list = ALL_SUPPORTED_MACHINES
+
+    # The default value for the output directory depends on the Oryx base
+    # directory so we need to set it after arguments are parsed.
+    if not args.output_dir:
+        args.output_dir = os.path.join(args.oryx_base, 'build', 'images')
+
+    if len(args.machine_list) != 1 and args.shell:
+        msg('ERROR: --shell requires exactly one machine to be specified')
+        sys.exit(1)
+
+    if len(args.machine_list) == 0 and not args.docs and not args.source_archive and not args.checksum:
+        msg('ERROR: Nothing to do. Please specify at least one machine or one of --docs, --source-archive or --checksum')
+        sys.exit(1)
+
+    return args
 
 def main():
     args = parse_args()
 
-    if args.clean and os.path.exists("tmp"):
-        msg(">>> Cleaning")
-        shutil.rmtree("tmp")
-
     setup_env(args)
 
     if args.shell:
-        exitcode = do_shell()
+        return do_shell(args.machine_list[0])
     else:
-        exitcode = do_build(args)
+        exitcode = 0
+        for machine in args.machine_list:
+            r = do_build(args, machine)
+            exitcode |= r
 
-        if args.logs:
-            msg(">>> Capturing logs")
-            capture_logs(args)
+        if args.docs:
+            exitcode |= do_docs(args)
 
-    sys.exit(exitcode)
+        if args.source_archive:
+            exitcode |= do_source_archive(args)
 
-main()
+        if args.checksum:
+            exitcode |= do_checksum(args)
+
+        return exitcode
+
+exitcode = main()
+sys.exit(exitcode)
