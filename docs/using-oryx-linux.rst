@@ -14,23 +14,19 @@ platforms:
 
 * Emulated x86 systems using QEMU:
 
+    * ``qemuarm``: 32-bit emulated ARM system.
+
+    * ``qemuarm64``: 64-bit emulated ARM system.
+
     * ``qemux86``: 32-bit emulated x86 system.
 
     * ``qemux86-64``: 64-bit emulated x86-64 system.
 
-* Raspberry Pi 32-bit ARM based systems:
-
-    * ``raspberrypi``: The original Raspberry Pi Model.
-
-    * ``raspberrypi2``: Raspberry Pi 2.
+* Raspberry Pi 3 ARM based systems:
 
     * ``raspberrypi3``: Raspberry Pi 3 in 32-bit mode.
 
     * ``raspberrypi3-64``: Raspberry Pi 3 in 64-bit mode.
-
-* Beaglebone Black ARM based system:
-
-    * ``beaglebone-yocto``: Beaglebone Black.
 
 Installation and Getting Started
 ================================
@@ -65,17 +61,11 @@ To launch qemu::
 For further details on the configuration and use of qemu, see the qemu
 documentation.
 
-Raspberry Pi
-------------
+Raspberry Pi 3
+--------------
 
 Download the appropriate SD card image for the desired Raspberry Pi model from
 the v0.4.0 release:
-
-* `SD card image [raspberrypi]
-  <https://downloads.toganlabs.com/oryx/distro/0.4.0/raspberrypi/native/host/oryx-native-host-raspberrypi.rpi-sdimg.xz>`_
-
-* `SD card image [raspberrypi2]
-  <https://downloads.toganlabs.com/oryx/distro/0.4.0/raspberrypi2/native/host/oryx-native-host-raspberrypi2.rpi-sdimg.xz>`_
 
 * `SD card image [raspberrypi3]
   <https://downloads.toganlabs.com/oryx/distro/0.4.0/raspberrypi3/native/host/oryx-native-host-raspberrypi3.rpi-sdimg.xz>`_
@@ -96,28 +86,6 @@ this should be replaced by the correct path for the system in use)::
 
 The SD card may then be removed and placed into the Raspberry Pi device itself.
 
-Beaglebone Black
-----------------
-
-Download the SD card image for the Beaglebone Black from the v0.4.0 release:
-
-* `SD card image
-  <https://downloads.toganlabs.com/oryx/distro/0.4.0/beaglebone-yocto/native/host/oryx-native-host-beaglebone-yocto.wic.xz>`_
-
-Once the appropriate SD card image has been downloaded, it must first be
-decompressed::
-
-    unxz oryx-native-host-beaglebone-yocto.wic.xz
-
-The uncompressed SD card image should then be written to an appropriate SD card
-(in this example the target SD card appears in the system as ``/dev/sdb`` but
-this should be replaced by the correct path for the system in use)::
-
-    dd if=oryx-native-host-beaglebone-yocto.wic of=/dev/sdb bs=1M
-
-The SD card may then be removed and placed into the Beaglebone Black device
-itself.
-
 Logging In
 ==========
 
@@ -137,16 +105,6 @@ Firstly, the appropriate official source for this release should be configured:
     oryxcmd add_source oryx \
         http://downloads.toganlabs.com/oryx/distro/0.4.0/qemux86
 
-* raspberrypi::
-
-    oryxcmd add_source oryx \
-        http://downloads.toganlabs.com/oryx/distro/0.4.0/raspberrypi
-
-* raspberrypi2::
-
-    oryxcmd add_source oryx \
-        http://downloads.toganlabs.com/oryx/distro/0.4.0/raspberrypi2
-
 * raspberrypi3::
 
     oryxcmd add_source oryx \
@@ -156,11 +114,6 @@ Firstly, the appropriate official source for this release should be configured:
 
     oryxcmd add_source oryx \
         http://downloads.toganlabs.com/oryx/distro/0.4.0/raspberrypi3-64
-
-* beaglebone-yocto::
-
-    oryxcmd add_source oryx \
-        http://downloads.toganlabs.com/oryx/distro/0.4.0/beaglebone-yocto
 
 Once this source is configured, a guest container can be created from one of the
 following images:

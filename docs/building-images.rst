@@ -251,53 +251,30 @@ https://downloads.toganlabs.com/oryx/distro/0.4.0/oryx-0.4.0.tar.xz.
 Once a source release has been downloaded, it simply needs to be extracted
 before following the steps in the `Preparing the Environment`_ section.
 
-Using repo
-++++++++++
+Using git
++++++++++
 
-The sources for Oryx Linux are split between several git repositories and the
-``repo`` tool may be used to fetch an integrated source tree which combines
-these repositories. This method allows a formal Oryx Linux release to be
-obtained with similar results to `Using a Source Release`_ above. It also allows
-the latest commit from each repository on either the master branch or a stable
-branch to be obtained.
-
-Firstly, the ``repo`` tool must be installed as follows:
-
-* For Ubuntu 16.04, simply execute ``apt install repo`` as root. This may also
-  work on more recent releases of Ubuntu and related distributions.
-
-* For other distributions, see the installation instructions at
-  https://source.android.com/source/downloading#installing-repo.
-
-Then in a new, empty directory initialise ``repo`` as follows:
+The Oryx git repo uses submodues to download and track the other git repos that
+it depends on so it must be cloned using the ``--recursive`` flag.
 
 * To use the ``master`` branch of Oryx Linux::
 
-    repo init -u git@gitlab.com:oryx/oryx-manifest.git
+    git clone --recursive https://gitlab.com/oryx/oryx.git
 
   The ``master`` branch is the active development branch and so may incorporate
   breaking changes at any time. Follow the ``master`` branch at your own risk!
 
 * To use a stable branch of Oryx Linux, such as the ``sumo`` branch::
 
-    repo init -u git@gitlab.com:oryx/oryx-manifest.git -b sumo
-
-  Changes in the stable branches follow a strict `stable branch policy
-  <https://wiki.yoctoproject.org/wiki/Stable_branch_maintenance#Policies>`_ and
-  so should not introduce breakage. Stable branch names match those used in
-  OpenEmbedded, for further details see the upstream `list of stable branches
-  and maintainers
-  <https://wiki.yoctoproject.org/wiki/Stable_branch_maintenance#Policies>`_.
+    FIXME
 
 * To use a formal release of Oryx Linux, such as the v0.4.0 release::
 
-    repo init -u git@gitlab.com:oryx/oryx-manifest.git -b refs/tags/v0.4.0
+    FIXME
 
-  For other tagged releases, ensure that the ``refs/tags/`` prefix is used in
-  the ``repo init`` command.
+The git submodules should be periodically updated with the following command::
 
-Once ``repo`` has been initialised, sources may be obtained by running ``repo
-sync``. To update sources at a later date, simply re-run ``repo sync``.
+    git submodule update
 
 Preparing the Environment
 -------------------------
@@ -350,9 +327,8 @@ There are a number of ways available to customise your build.
 * ``-M MACHINE``: Machine selection.
 
     * This sets the MACHINE variable.
-    * Supported machines are: ``qemux86``, ``qemux86-64``, ``raspberrypi``,
-      ``raspberrypi2``, ``raspberrypi3``, ``raspberrypi3-64`` and
-      ``beaglebone-yocto``.
+    * Supported machines are: ``qemux86``, ``qemux86-64``, ``raspberrypi3``,
+      ``raspberrypi3-64``
     * The default value is "qemux86".
 
 * ``-C``: Performs a clean build.
