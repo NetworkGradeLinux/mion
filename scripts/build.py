@@ -64,7 +64,8 @@ def setup_env(args):
         'ORYX_APPLICATION_PROFILE',
         'ORYX_VERSION',
         'ORYX_OUTPUT_DIR',
-        'ORYX_RM_WORK'
+        'ORYX_RM_WORK',
+        'ORYX_MIRROR_ARCHIVE',
         ])
 
     os.environ['ORYX_VERSION'] = args.build_version
@@ -73,6 +74,7 @@ def setup_env(args):
     os.environ['ORYX_BASE'] = args.oryx_base
     os.environ['ORYX_OUTPUT_DIR'] = args.output_dir
     os.environ['ORYX_RM_WORK'] = args.rm_work
+    os.environ['ORYX_MIRROR_ARCHIVE'] = args.mirror_archive
     os.environ['BUILDDIR'] = os.path.join(args.oryx_base, 'build')
     os.environ['BB_ENV_EXTRAWHITE'] = env_whitelist
     os.environ['PATH'] = '%s:%s:%s' % (
@@ -212,6 +214,9 @@ def parse_args():
 
     parser.add_argument('--rm-work', action='store_const', const='1', default='0',
         help='Remove temporary files after building each recipe to save disk space')
+
+    parser.add_argument('--mirror-archive', action='store_const', const='1', default='0',
+        help='Populate a full source mirror')
 
     parser.add_argument('--dl-dir',
         help='Override path for downloads directory')
