@@ -1,4 +1,10 @@
 #! /bin/bash
+#
+# Oryx patch script
+#
+# Copyright (C) 2019 Togán Labs
+# SPDX-License-Identifier: MIT
+#
 
 set -e
 shopt -s nullglob

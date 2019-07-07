@@ -1,4 +1,10 @@
 #! /usr/bin/env python3
+#
+# Oryx build script
+#
+# Copyright (C) 2017-2019 Togán Labs
+# SPDX-License-Identifier: MIT
+#
 
 # pylint: disable=missing-docstring
 
