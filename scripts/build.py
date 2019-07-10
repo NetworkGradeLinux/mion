@@ -1,7 +1,14 @@
 #! /usr/bin/env python3
+#
+# Oryx build script
+#
+# Copyright (C) 2017-2019 Togán Labs
+# SPDX-License-Identifier: MIT
+#
+
+# pylint: disable=missing-docstring
 
 import argparse
-import glob
 import os
 import subprocess
 import shutil
@@ -64,7 +71,8 @@ def setup_env(args):
         'ORYX_APPLICATION_PROFILE',
         'ORYX_VERSION',
         'ORYX_OUTPUT_DIR',
-        'ORYX_RM_WORK'
+        'ORYX_RM_WORK',
+        'ORYX_MIRROR_ARCHIVE',
         ])
 
     os.environ['ORYX_VERSION'] = args.build_version
@@ -73,6 +81,7 @@ def setup_env(args):
     os.environ['ORYX_BASE'] = args.oryx_base
     os.environ['ORYX_OUTPUT_DIR'] = args.output_dir
     os.environ['ORYX_RM_WORK'] = args.rm_work
+    os.environ['ORYX_MIRROR_ARCHIVE'] = args.mirror_archive
     os.environ['BUILDDIR'] = os.path.join(args.oryx_base, 'build')
     os.environ['BB_ENV_EXTRAWHITE'] = env_whitelist
     os.environ['PATH'] = '%s:%s:%s' % (
@@ -99,7 +108,7 @@ def do_build(args, machine):
     """Run a build using the configuration given in the args namespace"""
 
     msg(">>> Building Oryx with ORYX_VERSION=%s MACHINE=%s SYSTEM_PROFILE=%s APPLICATION_PROFILE=%s"
-            % (args.build_version, machine, args.system_profile, args.application_profile))
+        % (args.build_version, machine, args.system_profile, args.application_profile))
 
     bitbake_args = ""
     if args.bitbake_continue:
@@ -107,14 +116,16 @@ def do_build(args, machine):
 
     os.environ['MACHINE'] = machine
 
-    return subprocess.call("bitbake %s oryx-image" % (bitbake_args), shell=True, cwd=os.environ['BUILDDIR'])
+    return subprocess.call("bitbake %s oryx-image" % (bitbake_args), shell=True,
+                           cwd=os.environ['BUILDDIR'])
 
 def do_source_archive(args):
     # Confirm presence of `git archive-all` handler as it's not commonly
     # installed.
     if not shutil.which('git-archive-all'):
         msg("ERROR: Can't create a source archive without `git-archive-all`")
-        msg('The command `git-archive-all` can be installed via pip, see https://pypi.org/project/git-archive-all/')
+        msg('The command `git-archive-all` can be installed via pip, see '
+            'https://pypi.org/project/git-archive-all/')
         sys.exit(1)
 
     archive_stem = 'oryx-%s' % (args.build_version)
@@ -126,14 +137,14 @@ def do_source_archive(args):
 def do_checksum(args):
     exitcode = 0
 
-    for root, dirs, files in os.walk(args.output_dir):
+    for root, _, files in os.walk(args.output_dir):
         if 'SHA256SUMS' in files:
             files.remove('SHA256SUMS')
-        if len(files):
+        if files:
             sha256sums_path = os.path.join(root, 'SHA256SUMS')
-            with open(sha256sums_path, 'w') as f:
+            with open(sha256sums_path, 'w') as sha256sums:
                 cmd = ['sha256sum'] + files
-                exitcode |= subprocess.call(cmd, cwd=root, stdout=f)
+                exitcode |= subprocess.call(cmd, cwd=root, stdout=sha256sums)
 
     return exitcode
 
@@ -146,8 +157,8 @@ def do_docs_html(docs_path, output_path):
     if exitcode != 0:
         return exitcode
 
-    with tarfile.open(html_output_path, 'w:gz') as tf:
-        tf.add(html_build_path, arcname='oryx-docs-html')
+    with tarfile.open(html_output_path, 'w:gz') as tarball:
+        tarball.add(html_build_path, arcname='oryx-docs-html')
 
     return 0
 
@@ -179,54 +190,57 @@ def do_docs(args):
 def parse_args():
     """Parse command line arguments into an args namespace"""
 
-    parser = argparse.ArgumentParser(
-        description='Build script for Oryx Embedded Linux'
-        )
+    parser = argparse.ArgumentParser(description='Build script for Oryx Embedded Linux')
 
     parser.add_argument('-V', '--build-version', default='dev',
-        help='Version string used to identify this build')
+                        help='Version string used to identify this build')
 
     parser.add_argument('-S', '--system-profile', default='native',
-        help='System profile selection')
+                        help='System profile selection')
 
     parser.add_argument('-A', '--application-profile', default='minimal',
-        help='Application profile selection')
+                        help='Application profile selection')
 
     parser.add_argument('-M', '--machine', action='append', dest='machine_list', default=[],
-        help='Machine selection')
+                        help='Machine selection')
 
     parser.add_argument('-k', '--continue', dest='bitbake_continue', action='store_true',
-        help='Continue as much as possible after an error')
+                        help='Continue as much as possible after an error')
 
     parser.add_argument('--oryx-base', default=os.getcwd(),
-        help='Base directory of the Oryx source tree, defaults to current working directory')
+                        help='Base directory of the Oryx source tree, defaults to current '
+                        'working directory')
 
     parser.add_argument('--shell', action='store_true',
-        help='Start a development shell instead of running bitbake directly')
+                        help='Start a development shell instead of running bitbake directly')
 
     parser.add_argument('-o', '--output-dir',
-        help='Output directory for final artifacts, defaults to `$BUILDDIR/images`')
+                        help='Output directory for final artifacts, defaults to `$BUILDDIR/images`')
 
     parser.add_argument('--all-machines', action='store_true',
-        help='Build for all supported machines')
+                        help='Build for all supported machines')
 
     parser.add_argument('--rm-work', action='store_const', const='1', default='0',
-        help='Remove temporary files after building each recipe to save disk space')
+                        help='Remove temporary files after building each recipe to save disk space')
+
+    parser.add_argument('--mirror-archive', action='store_const', const='1', default='0',
+                        help='Populate a full source mirror')
 
     parser.add_argument('--dl-dir',
-        help='Override path for downloads directory')
+                        help='Override path for downloads directory')
 
     parser.add_argument('--sstate-dir',
-        help='Override path for sstate cache directory')
+                        help='Override path for sstate cache directory')
 
     parser.add_argument('--docs', action='store_true',
-        help='Build documentation')
+                        help='Build documentation')
 
     parser.add_argument('--source-archive', action='store_true',
-        help='Create an archive of the Oryx Project sources (bitbake, layers, build config & scripts)')
+                        help='Create an archive of the Oryx Project sources (bitbake, layers, '
+                        'build config & scripts)')
 
     parser.add_argument('--checksum', action='store_true',
-        help='Create checksums for all build artifacts (used for Oryx releases)')
+                        help='Create checksums for all build artifacts (used for Oryx releases)')
 
     args = parser.parse_args()
 
@@ -246,8 +260,9 @@ def parse_args():
         msg('ERROR: --shell requires exactly one machine to be specified')
         sys.exit(1)
 
-    if len(args.machine_list) == 0 and not args.docs and not args.source_archive and not args.checksum:
-        msg('ERROR: Nothing to do. Please specify at least one machine or one of --docs, --source-archive or --checksum')
+    if not args.machine_list and not args.docs and not args.source_archive and not args.checksum:
+        msg('ERROR: Nothing to do. Please specify at least one machine or one of --docs, '
+            '--source-archive or --checksum')
         sys.exit(1)
 
     return args
@@ -258,23 +273,26 @@ def main():
     setup_env(args)
 
     if args.shell:
-        return do_shell(args.machine_list[0])
+        exitcode = do_shell(args.machine_list[0])
     else:
         exitcode = 0
         for machine in args.machine_list:
-            r = do_build(args, machine)
-            exitcode |= r
+            retval = do_build(args, machine)
+            exitcode |= retval
 
         if args.docs:
-            exitcode |= do_docs(args)
+            retval = do_docs(args)
+            exitcode |= retval
 
         if args.source_archive:
-            exitcode |= do_source_archive(args)
+            retval = do_source_archive(args)
+            exitcode |= retval
 
         if args.checksum:
-            exitcode |= do_checksum(args)
+            retval = do_checksum(args)
+            exitcode |= retval
 
-        return exitcode
+    sys.exit(exitcode)
 
-exitcode = main()
-sys.exit(exitcode)
+if __name__ == "__main__":
+    main()
