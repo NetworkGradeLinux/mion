@@ -194,6 +194,19 @@ def do_docs(args):
 
     return exitcode
 
+def handle_release(args):
+    if args.release:
+        if args.system_profile or args.application_profile or args.target_pair_list or args.machine_list or args.shell:
+            msg('ERROR: --release cannot be combined with --shell or specification of MACHINE, SYSTEM_PROFILE or APPLICATION_PROFILE values')
+            sys.exit(1)
+
+        args.target_pair_list = ['guest:minimal', 'guest:full-cmdline', 'native:host', 'native:host-test']
+        args.all_machines = True
+        args.docs = True
+        args.mirror_archive = '1'
+        args.source_archive = True
+        args.checksum = True
+
 def handle_output_dir(args):
     # The default value for the output directory depends on the Oryx base
     # directory so we need to set it after arguments are parsed.
@@ -302,8 +315,13 @@ def parse_args():
     parser.add_argument('--checksum', action='store_true',
                         help='Create checksums for all build artifacts (used for Oryx releases)')
 
+    parser.add_argument('--release', action='store_true',
+                        help='Perform a full release build')
+
     args = parser.parse_args()
 
+    # handle_release() must be called first as it pre-sets other arguments
+    handle_release(args)
     handle_output_dir(args)
     handle_machine_list(args)
     handle_target_list(args)
