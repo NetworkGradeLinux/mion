@@ -194,6 +194,55 @@ def do_docs(args):
 
     return exitcode
 
+def handle_output_dir(args):
+    # The default value for the output directory depends on the Oryx base
+    # directory so we need to set it after arguments are parsed.
+    if not args.output_dir:
+        args.output_dir = os.path.join(args.oryx_base, 'build', 'images')
+
+def handle_machine_list(args):
+    # Handle --all-machines
+    if args.machine_list and args.all_machines:
+        msg("ERROR: Can't combine --all-machines and --machine options")
+        sys.exit(1)
+    if args.all_machines:
+        args.machine_list = ALL_SUPPORTED_MACHINES
+
+    if len(args.machine_list) != 1 and args.shell:
+        msg('ERROR: --shell requires exactly one machine to be specified')
+        sys.exit(1)
+
+def handle_target_list(args):
+    args.target_list = []
+
+    # If only one of SYSTEM_PROFILE and APPLICATION_PROFILE is given, use the default value for the other
+    if args.application_profile and not args.system_profile:
+        args.system_profile = DEFAULT_SYSTEM_PROFILE
+    if args.system_profile and not args.application_profile:
+        args.application_profile = DEFAULT_APPLICATION_PROFILE
+
+    if args.system_profile:
+        # args.application_profile must be set due to the above condition
+        args.target_list.append(TargetPair(args.system_profile, args.application_profile))
+
+    for target_pair in args.target_pair_list:
+        (system_profile, application_profile) = target_pair.split(':')
+        args.target_list.append(TargetPair(system_profile, application_profile))
+
+    if not len(args.target_list):
+        # Add the default target pair
+        args.target_list.append(TargetPair(DEFAULT_SYSTEM_PROFILE, DEFAULT_APPLICATION_PROFILE))
+
+    if len(args.target_list) != 1 and args.shell:
+        msg('ERROR: --shell requires exactly one target pair (SYSTEM_PROFILE & APPLICATION_PROFILE) to be specified')
+        sys.exit(1)
+
+def handle_nothing_to_do(args):
+    if not args.machine_list and not args.docs and not args.source_archive and not args.checksum:
+        msg('ERROR: Nothing to do. Please specify at least one machine or one of --docs, '
+            '--source-archive or --checksum')
+        sys.exit(1)
+
 def parse_args():
     """Parse command line arguments into an args namespace"""
 
@@ -255,50 +304,10 @@ def parse_args():
 
     args = parser.parse_args()
 
-    # Handle --all-machines
-    if args.machine_list and args.all_machines:
-        msg("ERROR: Can't combine --all-machines and --machine options")
-        sys.exit(1)
-    if args.all_machines:
-        args.machine_list = ALL_SUPPORTED_MACHINES
-
-    # The default value for the output directory depends on the Oryx base
-    # directory so we need to set it after arguments are parsed.
-    if not args.output_dir:
-        args.output_dir = os.path.join(args.oryx_base, 'build', 'images')
-
-    if len(args.machine_list) != 1 and args.shell:
-        msg('ERROR: --shell requires exactly one machine to be specified')
-        sys.exit(1)
-
-    if not args.machine_list and not args.docs and not args.source_archive and not args.checksum:
-        msg('ERROR: Nothing to do. Please specify at least one machine or one of --docs, '
-            '--source-archive or --checksum')
-        sys.exit(1)
-
-    args.target_list = []
-
-    # If only one of SYSTEM_PROFILE and APPLICATION_PROFILE is given, use the default value for the other
-    if args.application_profile and not args.system_profile:
-        args.system_profile = DEFAULT_SYSTEM_PROFILE
-    if args.system_profile and not args.application_profile:
-        args.application_profile = DEFAULT_APPLICATION_PROFILE
-
-    if args.system_profile:
-        # args.application_profile must be set due to the above condition
-        args.target_list.append(TargetPair(args.system_profile, args.application_profile))
-
-    for target_pair in args.target_pair_list:
-        (system_profile, application_profile) = target_pair.split(':')
-        args.target_list.append(TargetPair(system_profile, application_profile))
-
-    if not len(args.target_list):
-        # Add the default target pair
-        args.target_list.append(TargetPair(DEFAULT_SYSTEM_PROFILE, DEFAULT_APPLICATION_PROFILE))
-
-    if len(args.target_list) != 1 and args.shell:
-        msg('ERROR: --shell requires exactly one target pair (SYSTEM_PROFILE & APPLICATION_PROFILE) to be specified')
-        sys.exit(1)
+    handle_output_dir(args)
+    handle_machine_list(args)
+    handle_target_list(args)
+    handle_nothing_to_do(args)
 
     return args
 
