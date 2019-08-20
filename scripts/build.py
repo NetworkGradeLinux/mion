@@ -201,8 +201,8 @@ def parse_args():
     parser.add_argument('-A', '--application-profile', default='minimal',
                         help='Application profile selection')
 
-    parser.add_argument('-M', '--machine', action='append', dest='machine_list', default=[],
-                        help='Machine selection')
+    parser.add_argument('-M', '--machine', action='append', dest='machine_list', metavar='MACHINE', default=[],
+                        help='Machine selection (can be specified multiple times)')
 
     parser.add_argument('-k', '--continue', dest='bitbake_continue', action='store_true',
                         help='Continue as much as possible after an error')
