@@ -9,6 +9,7 @@
 # pylint: disable=missing-docstring
 
 import argparse
+import collections
 import os
 import subprocess
 import shutil
@@ -23,6 +24,10 @@ ALL_SUPPORTED_MACHINES = [
     'raspberrypi3',
     'raspberrypi3-64'
 ]
+DEFAULT_SYSTEM_PROFILE = 'native'
+DEFAULT_APPLICATION_PROFILE = 'minimal'
+
+TargetPair = collections.namedtuple('TargetPair', ['system_profile', 'application_profile'])
 
 def msg(message):
     print(message, flush=True)
@@ -197,11 +202,15 @@ def parse_args():
     parser.add_argument('-V', '--build-version', default='dev',
                         help='Version string used to identify this build')
 
-    parser.add_argument('-S', '--system-profile', default='native',
+    parser.add_argument('-S', '--system-profile',
                         help='System profile selection')
 
-    parser.add_argument('-A', '--application-profile', default='minimal',
+    parser.add_argument('-A', '--application-profile',
                         help='Application profile selection')
+
+    parser.add_argument('-T', '--target-pair', action='append', dest='target_pair_list', metavar='SYSTEM_PROFILE:APPLICATION_PROFILE', default=[],
+                        help='Target pair selection (can be specified multiple times), '
+                        'an alternative to passing \'-S\' & \'-A\'')
 
     parser.add_argument('-M', '--machine', action='append', dest='machine_list', metavar='MACHINE', default=[],
                         help='Machine selection (can be specified multiple times)')
@@ -267,6 +276,30 @@ def parse_args():
             '--source-archive or --checksum')
         sys.exit(1)
 
+    args.target_list = []
+
+    # If only one of SYSTEM_PROFILE and APPLICATION_PROFILE is given, use the default value for the other
+    if args.application_profile and not args.system_profile:
+        args.system_profile = DEFAULT_SYSTEM_PROFILE
+    if args.system_profile and not args.application_profile:
+        args.application_profile = DEFAULT_APPLICATION_PROFILE
+
+    if args.system_profile:
+        # args.application_profile must be set due to the above condition
+        args.target_list.append(TargetPair(args.system_profile, args.application_profile))
+
+    for target_pair in args.target_pair_list:
+        (system_profile, application_profile) = target_pair.split(':')
+        args.target_list.append(TargetPair(system_profile, application_profile))
+
+    if not len(args.target_list):
+        # Add the default target pair
+        args.target_list.append(TargetPair(DEFAULT_SYSTEM_PROFILE, DEFAULT_APPLICATION_PROFILE))
+
+    if len(args.target_list) != 1 and args.shell:
+        msg('ERROR: --shell requires exactly one target pair (SYSTEM_PROFILE & APPLICATION_PROFILE) to be specified')
+        sys.exit(1)
+
     return args
 
 def main():
@@ -275,11 +308,14 @@ def main():
     setup_env(args)
 
     if args.shell:
-        exitcode = do_shell(args.machine_list[0], args.system_profile, args.application_profile)
+        machine = args.machine_list[0]
+        target = args.target_list[0]
+        exitcode = do_shell(machine, target.system_profile, target.application_profile)
     else:
         exitcode = 0
         for machine in args.machine_list:
-            retval = do_build(args, machine, args.system_profile, args.application_profile)
+            for target in args.target_list:
+                retval = do_build(args, machine, target.system_profile, target.application_profile)
             exitcode |= retval
 
         if args.docs:
