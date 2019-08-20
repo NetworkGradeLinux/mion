@@ -76,8 +76,6 @@ def setup_env(args):
         ])
 
     os.environ['ORYX_VERSION'] = args.build_version
-    os.environ['ORYX_SYSTEM_PROFILE'] = args.system_profile
-    os.environ['ORYX_APPLICATION_PROFILE'] = args.application_profile
     os.environ['ORYX_BASE'] = args.oryx_base
     os.environ['ORYX_OUTPUT_DIR'] = args.output_dir
     os.environ['ORYX_RM_WORK'] = args.rm_work
@@ -95,26 +93,30 @@ def setup_env(args):
     if args.sstate_dir:
         os.environ['SSTATE_DIR'] = args.sstate_dir
 
-def do_shell(machine):
+def do_shell(machine, system_profile, application_profile):
     """Start a shell where a user can run bitbake"""
 
     msg(">>> Entering Oryx development shell...")
 
     os.environ['MACHINE'] = machine
+    os.environ['ORYX_SYSTEM_PROFILE'] = system_profile
+    os.environ['ORYX_APPLICATION_PROFILE'] = application_profile
 
     return subprocess.call('bash', cwd=os.environ['BUILDDIR'])
 
-def do_build(args, machine):
+def do_build(args, machine, system_profile, application_profile):
     """Run a build using the configuration given in the args namespace"""
 
     msg(">>> Building Oryx with ORYX_VERSION=%s MACHINE=%s SYSTEM_PROFILE=%s APPLICATION_PROFILE=%s"
-        % (args.build_version, machine, args.system_profile, args.application_profile))
+        % (args.build_version, machine, system_profile, application_profile))
 
     bitbake_args = ""
     if args.bitbake_continue:
         bitbake_args += " -k"
 
     os.environ['MACHINE'] = machine
+    os.environ['ORYX_SYSTEM_PROFILE'] = system_profile
+    os.environ['ORYX_APPLICATION_PROFILE'] = application_profile
 
     return subprocess.call("bitbake %s oryx-image" % (bitbake_args), shell=True,
                            cwd=os.environ['BUILDDIR'])
@@ -273,11 +275,11 @@ def main():
     setup_env(args)
 
     if args.shell:
-        exitcode = do_shell(args.machine_list[0])
+        exitcode = do_shell(args.machine_list[0], args.system_profile, args.application_profile)
     else:
         exitcode = 0
         for machine in args.machine_list:
-            retval = do_build(args, machine)
+            retval = do_build(args, machine, args.system_profile, args.application_profile)
             exitcode |= retval
 
         if args.docs:
