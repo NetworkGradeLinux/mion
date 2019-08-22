@@ -9,6 +9,7 @@
 # pylint: disable=missing-docstring
 
 import argparse
+import collections
 import os
 import subprocess
 import shutil
@@ -23,6 +24,10 @@ ALL_SUPPORTED_MACHINES = [
     'raspberrypi3',
     'raspberrypi3-64'
 ]
+DEFAULT_SYSTEM_PROFILE = 'native'
+DEFAULT_APPLICATION_PROFILE = 'minimal'
+
+TargetPair = collections.namedtuple('TargetPair', ['system_profile', 'application_profile'])
 
 def msg(message):
     print(message, flush=True)
@@ -76,8 +81,6 @@ def setup_env(args):
         ])
 
     os.environ['ORYX_VERSION'] = args.build_version
-    os.environ['ORYX_SYSTEM_PROFILE'] = args.system_profile
-    os.environ['ORYX_APPLICATION_PROFILE'] = args.application_profile
     os.environ['ORYX_BASE'] = args.oryx_base
     os.environ['ORYX_OUTPUT_DIR'] = args.output_dir
     os.environ['ORYX_RM_WORK'] = args.rm_work
@@ -95,26 +98,30 @@ def setup_env(args):
     if args.sstate_dir:
         os.environ['SSTATE_DIR'] = args.sstate_dir
 
-def do_shell(machine):
+def do_shell(machine, system_profile, application_profile):
     """Start a shell where a user can run bitbake"""
 
     msg(">>> Entering Oryx development shell...")
 
     os.environ['MACHINE'] = machine
+    os.environ['ORYX_SYSTEM_PROFILE'] = system_profile
+    os.environ['ORYX_APPLICATION_PROFILE'] = application_profile
 
     return subprocess.call('bash', cwd=os.environ['BUILDDIR'])
 
-def do_build(args, machine):
+def do_build(args, machine, system_profile, application_profile):
     """Run a build using the configuration given in the args namespace"""
 
     msg(">>> Building Oryx with ORYX_VERSION=%s MACHINE=%s SYSTEM_PROFILE=%s APPLICATION_PROFILE=%s"
-        % (args.build_version, machine, args.system_profile, args.application_profile))
+        % (args.build_version, machine, system_profile, application_profile))
 
     bitbake_args = ""
     if args.bitbake_continue:
         bitbake_args += " -k"
 
     os.environ['MACHINE'] = machine
+    os.environ['ORYX_SYSTEM_PROFILE'] = system_profile
+    os.environ['ORYX_APPLICATION_PROFILE'] = application_profile
 
     return subprocess.call("bitbake %s oryx-image" % (bitbake_args), shell=True,
                            cwd=os.environ['BUILDDIR'])
@@ -187,6 +194,68 @@ def do_docs(args):
 
     return exitcode
 
+def handle_release(args):
+    if args.release:
+        if args.system_profile or args.application_profile or args.target_pair_list or args.machine_list or args.shell:
+            msg('ERROR: --release cannot be combined with --shell or specification of MACHINE, SYSTEM_PROFILE or APPLICATION_PROFILE values')
+            sys.exit(1)
+
+        args.target_pair_list = ['guest:minimal', 'guest:full-cmdline', 'native:host', 'native:host-test']
+        args.all_machines = True
+        args.docs = True
+        args.mirror_archive = '1'
+        args.source_archive = True
+        args.checksum = True
+
+def handle_output_dir(args):
+    # The default value for the output directory depends on the Oryx base
+    # directory so we need to set it after arguments are parsed.
+    if not args.output_dir:
+        args.output_dir = os.path.join(args.oryx_base, 'build', 'images')
+
+def handle_machine_list(args):
+    # Handle --all-machines
+    if args.machine_list and args.all_machines:
+        msg("ERROR: Can't combine --all-machines and --machine options")
+        sys.exit(1)
+    if args.all_machines:
+        args.machine_list = ALL_SUPPORTED_MACHINES
+
+    if len(args.machine_list) != 1 and args.shell:
+        msg('ERROR: --shell requires exactly one machine to be specified')
+        sys.exit(1)
+
+def handle_target_list(args):
+    args.target_list = []
+
+    # If only one of SYSTEM_PROFILE and APPLICATION_PROFILE is given, use the default value for the other
+    if args.application_profile and not args.system_profile:
+        args.system_profile = DEFAULT_SYSTEM_PROFILE
+    if args.system_profile and not args.application_profile:
+        args.application_profile = DEFAULT_APPLICATION_PROFILE
+
+    if args.system_profile:
+        # args.application_profile must be set due to the above condition
+        args.target_list.append(TargetPair(args.system_profile, args.application_profile))
+
+    for target_pair in args.target_pair_list:
+        (system_profile, application_profile) = target_pair.split(':')
+        args.target_list.append(TargetPair(system_profile, application_profile))
+
+    if not len(args.target_list):
+        # Add the default target pair
+        args.target_list.append(TargetPair(DEFAULT_SYSTEM_PROFILE, DEFAULT_APPLICATION_PROFILE))
+
+    if len(args.target_list) != 1 and args.shell:
+        msg('ERROR: --shell requires exactly one target pair (SYSTEM_PROFILE & APPLICATION_PROFILE) to be specified')
+        sys.exit(1)
+
+def handle_nothing_to_do(args):
+    if not args.machine_list and not args.docs and not args.source_archive and not args.checksum:
+        msg('ERROR: Nothing to do. Please specify at least one machine or one of --docs, '
+            '--source-archive or --checksum')
+        sys.exit(1)
+
 def parse_args():
     """Parse command line arguments into an args namespace"""
 
@@ -195,14 +264,18 @@ def parse_args():
     parser.add_argument('-V', '--build-version', default='dev',
                         help='Version string used to identify this build')
 
-    parser.add_argument('-S', '--system-profile', default='native',
+    parser.add_argument('-S', '--system-profile',
                         help='System profile selection')
 
-    parser.add_argument('-A', '--application-profile', default='minimal',
+    parser.add_argument('-A', '--application-profile',
                         help='Application profile selection')
 
-    parser.add_argument('-M', '--machine', action='append', dest='machine_list', default=[],
-                        help='Machine selection')
+    parser.add_argument('-T', '--target-pair', action='append', dest='target_pair_list', metavar='SYSTEM_PROFILE:APPLICATION_PROFILE', default=[],
+                        help='Target pair selection (can be specified multiple times), '
+                        'an alternative to passing \'-S\' & \'-A\'')
+
+    parser.add_argument('-M', '--machine', action='append', dest='machine_list', metavar='MACHINE', default=[],
+                        help='Machine selection (can be specified multiple times)')
 
     parser.add_argument('-k', '--continue', dest='bitbake_continue', action='store_true',
                         help='Continue as much as possible after an error')
@@ -242,28 +315,17 @@ def parse_args():
     parser.add_argument('--checksum', action='store_true',
                         help='Create checksums for all build artifacts (used for Oryx releases)')
 
+    parser.add_argument('--release', action='store_true',
+                        help='Perform a full release build')
+
     args = parser.parse_args()
 
-    # Handle --all-machines
-    if args.machine_list and args.all_machines:
-        msg("ERROR: Can't combine --all-machines and --machine options")
-        sys.exit(1)
-    if args.all_machines:
-        args.machine_list = ALL_SUPPORTED_MACHINES
-
-    # The default value for the output directory depends on the Oryx base
-    # directory so we need to set it after arguments are parsed.
-    if not args.output_dir:
-        args.output_dir = os.path.join(args.oryx_base, 'build', 'images')
-
-    if len(args.machine_list) != 1 and args.shell:
-        msg('ERROR: --shell requires exactly one machine to be specified')
-        sys.exit(1)
-
-    if not args.machine_list and not args.docs and not args.source_archive and not args.checksum:
-        msg('ERROR: Nothing to do. Please specify at least one machine or one of --docs, '
-            '--source-archive or --checksum')
-        sys.exit(1)
+    # handle_release() must be called first as it pre-sets other arguments
+    handle_release(args)
+    handle_output_dir(args)
+    handle_machine_list(args)
+    handle_target_list(args)
+    handle_nothing_to_do(args)
 
     return args
 
@@ -273,11 +335,14 @@ def main():
     setup_env(args)
 
     if args.shell:
-        exitcode = do_shell(args.machine_list[0])
+        machine = args.machine_list[0]
+        target = args.target_list[0]
+        exitcode = do_shell(machine, target.system_profile, target.application_profile)
     else:
         exitcode = 0
         for machine in args.machine_list:
-            retval = do_build(args, machine)
+            for target in args.target_list:
+                retval = do_build(args, machine, target.system_profile, target.application_profile)
             exitcode |= retval
 
         if args.docs:
