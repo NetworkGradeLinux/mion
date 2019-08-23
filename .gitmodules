@@ -21,3 +21,6 @@
 	path = meta-raspberrypi
 	url = https://github.com/agherzan/meta-raspberrypi.git
 	branch = warrior
+[submodule "meta-mender"]
+	path = meta-mender
+	url = https://github.com/mendersoftware/meta-mender.git
