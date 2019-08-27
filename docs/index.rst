@@ -10,6 +10,7 @@ Oryx Linux |version| documentation
    using-oryx-linux
    oryx-apps
    building-images
+   contributing
 
 .. only:: html
 
