@@ -11,10 +11,3 @@ Oryx Linux |version| documentation
    oryx-apps
    building-images
    contributing
-
-.. only:: html
-
-    Indices and tables
-    ==================
-
-    * :ref:`search`
