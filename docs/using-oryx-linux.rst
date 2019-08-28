@@ -35,25 +35,37 @@ qemux86
 -------
 
 Download the appropriate kernel and rootfs images for the desired QEMU platform
-from the v0.4.0 release:
+from the v0.5.0 release:
 
 * `Kernel image [32-bit x86]
-  <https://downloads.toganlabs.com/oryx/distro/0.4.0/qemux86/native/host/bzImage-qemux86.bin>`_
+  <https://downloads.toganlabs.com/oryx/distro/0.5.0/qemux86/native/host/bzImage-qemux86.bin>`_
 
 * `Kernel image [64-bit x86-64]
-  <https://downloads.toganlabs.com/oryx/distro/0.4.0/qemux86-64/native/host/bzImage-qemux86-64.bin>`_
+  <https://downloads.toganlabs.com/oryx/distro/0.5.0/qemux86-64/native/host/bzImage-qemux86-64.bin>`_
+
+* `Kernel image [32-bit ARM]
+  <https://downloads.toganlabs.com/oryx/distro/0.5.0/qemuarm/native/host/zImage-qemuarm.bin>`_
+
+* `Kernel image [64-bit ARM]
+  <https://downloads.toganlabs.com/oryx/distro/0.5.0/qemuarm64/native/host/Image-qemuarm64.bin>`_
 
 * `Rootfs image [32-bit x86]
-  <https://downloads.toganlabs.com/oryx/distro/0.4.0/qemux86/native/host/oryx-native-host-qemux86.ext4.xz>`_
+  <https://downloads.toganlabs.com/oryx/distro/0.5.0/qemux86/native/host/oryx-native-host-qemux86.ext4.xz>`_
 
 * `Rootfs image [64-bit x86-64]
-  <https://downloads.toganlabs.com/oryx/distro/0.4.0/qemux86-64/native/host/oryx-native-host-qemux86-64.ext4.xz>`_
+  <https://downloads.toganlabs.com/oryx/distro/0.5.0/qemux86-64/native/host/oryx-native-host-qemux86-64.ext4.xz>`_
+
+* `Rootfs image [32-bit ARM]
+  <https://downloads.toganlabs.com/oryx/distro/0.5.0/qemuarm/native/host/oryx-native-host-qemuarm.ext4.xz>`_
+
+* `Rootfs image [64-bit ARM]
+  <https://downloads.toganlabs.com/oryx/distro/0.5.0/qemuarm64/native/host/oryx-native-host-qemuarm64.ext4.xz>`_
 
 The rootfs image must first be decompressed::
 
     unxz oryx-native-host-qemux86.ext4.xz
 
-To launch qemu::
+To launch qemu (example for qemux86 target)::
 
     qemu-system-i386 -kernel bzImage-qemux86.bin -hda oryx-native-host-qemux86.ext4 \
         -append "root=/dev/hda"
@@ -65,13 +77,13 @@ Raspberry Pi 3
 --------------
 
 Download the appropriate SD card image for the desired Raspberry Pi model from
-the v0.4.0 release:
+the v0.5.0 release:
 
 * `SD card image [raspberrypi3]
-  <https://downloads.toganlabs.com/oryx/distro/0.4.0/raspberrypi3/native/host/oryx-native-host-raspberrypi3.rpi-sdimg.xz>`_
+  <https://downloads.toganlabs.com/oryx/distro/0.5.0/raspberrypi3/native/host/oryx-native-host-raspberrypi3.rpi-sdimg.xz>`_
 
 * `SD card image [raspberrypi3-64]
-  <https://downloads.toganlabs.com/oryx/distro/0.4.0/raspberrypi3-64/native/host/oryx-native-host-raspberrypi3-64.rpi-sdimg.xz>`_
+  <https://downloads.toganlabs.com/oryx/distro/0.5.0/raspberrypi3-64/native/host/oryx-native-host-raspberrypi3-64.rpi-sdimg.xz>`_
 
 Once the appropriate SD card image has been downloaded, it must first be
 decompressed::
@@ -103,17 +115,32 @@ Firstly, the appropriate official source for this release should be configured:
 * qemux86::
 
     oryxcmd add_source oryx \
-        http://downloads.toganlabs.com/oryx/distro/0.4.0/qemux86
+        http://downloads.toganlabs.com/oryx/distro/0.5.0/qemux86
+
+* qemux86-64::
+
+    oryxcmd add_source oryx \
+        http://downloads.toganlabs.com/oryx/distro/0.5.0/qemux86-64
+
+* qemuarm::
+
+    oryxcmd add_source oryx \
+        http://downloads.toganlabs.com/oryx/distro/0.5.0/qemuarm
+
+* qemuarm64::
+
+    oryxcmd add_source oryx \
+        http://downloads.toganlabs.com/oryx/distro/0.5.0/qemuarm64
 
 * raspberrypi3::
 
     oryxcmd add_source oryx \
-        http://downloads.toganlabs.com/oryx/distro/0.4.0/raspberrypi3
+        http://downloads.toganlabs.com/oryx/distro/0.5.0/raspberrypi3
 
 * raspberrypi3-64::
 
     oryxcmd add_source oryx \
-        http://downloads.toganlabs.com/oryx/distro/0.4.0/raspberrypi3-64
+        http://downloads.toganlabs.com/oryx/distro/0.5.0/raspberrypi3-64
 
 Once this source is configured, a guest container can be created from one of the
 following images:

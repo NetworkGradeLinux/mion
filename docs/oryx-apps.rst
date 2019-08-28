@@ -23,7 +23,7 @@ Interactive Mode
 In the interactive mode, ``oryxcmd`` is started without specifying a command::
 
     $ oryxcmd
-    Welcome to oryxcmd (oryx-apps v0.2.4)
+    Welcome to oryxcmd (oryx-apps v0.3.0)
     oryxcmd>
 
 At the ``oryxcmd`` prompt, any of the supported `Commands`_ may be executed. For
@@ -81,8 +81,8 @@ Arguments:
 
 Example::
 
-    oryxcmd> add_source oryx http://downloads.toganlabs.com/oryx/distro/0.4.0/raspberrypi3
-    Added source "oryx" with URL "http://downloads.toganlabs.com/oryx/distro/0.4.0/raspberrypi3"
+    oryxcmd> add_source oryx http://downloads.toganlabs.com/oryx/distro/0.5.0/raspberrypi3
+    Added source "oryx" with URL "http://downloads.toganlabs.com/oryx/distro/0.5.0/raspberrypi3"
 
 remove_source
 +++++++++++++
@@ -135,7 +135,7 @@ Example::
 
     oryxcmd> show_source oryx
     {
-        "url": "http://downloads.toganlabs.com/oryx/distro/0.4.0/raspberrypi3"
+        "url": "http://downloads.toganlabs.com/oryx/distro/0.5.0/raspberrypi3"
     }
 
 add_guest
@@ -227,12 +227,12 @@ Example::
 	    "MACHINE": "raspberrypi3",
             "ROOTFS": "oryx-guest-minimal-raspberrypi3.tar.xz",
 	    "SYSTEM_PROFILE": "guest",
-	    "VERSION": "0.4.0"
+	    "VERSION": "0.5.0"
 	},
 	"image_name": "minimal",
 	"path": "/var/lib/oryx-guests/test",
 	"source": {
-	    "url": "http://downloads.toganlabs.com/oryx/distro/0.4.0/raspberrypi3"
+	    "url": "http://downloads.toganlabs.com/oryx/distro/0.5.0/raspberrypi3"
 	},
 	"source_name": "oryx"
     }
@@ -406,7 +406,7 @@ This command has no arguments.
 Example::
 
     oryxcmd> version
-    oryxcmd (oryx-apps v0.2.4)
+    oryxcmd (oryx-apps v0.3.0)
 
 exit
 ++++

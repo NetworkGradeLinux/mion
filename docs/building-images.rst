@@ -245,8 +245,8 @@ compiled images. This integrated source release contains all OpenEmbedded layers
 needed to build Oryx Linux images and is essentially a point-in-time snapshot of
 the sources which may be obtained from git using the ``repo`` tool.
 
-For the v0.4.0 release, this source release may be obtained from
-https://downloads.toganlabs.com/oryx/distro/0.4.0/oryx-0.4.0.tar.xz.
+For the v0.5.0 release, this source release may be obtained from
+https://downloads.toganlabs.com/oryx/distro/0.5.0/oryx-0.5.0.tar.xz.
 
 Once a source release has been downloaded, it simply needs to be extracted
 before following the steps in the `Preparing the Environment`_ section.
@@ -268,7 +268,7 @@ it depends on so it must be cloned using the ``--recursive`` flag.
 
     FIXME
 
-* To use a formal release of Oryx Linux, such as the v0.4.0 release::
+* To use a formal release of Oryx Linux, such as the v0.5.0 release::
 
     FIXME
 
