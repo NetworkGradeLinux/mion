@@ -12,7 +12,7 @@ Supported Platforms
 This release of Oryx Linux supports all features on the following demonstration
 platforms:
 
-* Emulated x86 systems using QEMU:
+* Emulated QEMU systems:
 
     * ``qemuarm``: 32-bit emulated ARM system.
 
@@ -31,8 +31,8 @@ platforms:
 Installation and Getting Started
 ================================
 
-qemux86
--------
+QEMU Systems
+------------
 
 Download the appropriate kernel and rootfs images for the desired QEMU platform
 from the v0.5.0 release:
@@ -80,10 +80,10 @@ Download the appropriate SD card image for the desired Raspberry Pi model from
 the v0.5.0 release:
 
 * `SD card image [raspberrypi3]
-  <https://downloads.toganlabs.com/oryx/distro/0.5.0/raspberrypi3/native/host/oryx-native-host-raspberrypi3.rpi-sdimg.xz>`_
+  <https://downloads.toganlabs.com/oryx/distro/0.5.0/raspberrypi3/native/host/oryx-native-host-raspberrypi3.wic.xz>`_
 
 * `SD card image [raspberrypi3-64]
-  <https://downloads.toganlabs.com/oryx/distro/0.5.0/raspberrypi3-64/native/host/oryx-native-host-raspberrypi3-64.rpi-sdimg.xz>`_
+  <https://downloads.toganlabs.com/oryx/distro/0.5.0/raspberrypi3-64/native/host/oryx-native-host-raspberrypi3-64.wic.xz>`_
 
 Once the appropriate SD card image has been downloaded, it must first be
 decompressed::
@@ -102,7 +102,6 @@ Logging In
 ==========
 
 After installation you can login as ``root`` with the default password ``oryx``.
-
 
 Adding Guest Containers
 =======================
