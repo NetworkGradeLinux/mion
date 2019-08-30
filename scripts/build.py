@@ -190,8 +190,10 @@ def do_docs(args):
 
     os.makedirs(output_path, exist_ok=True)
 
-    exitcode |= do_docs_html(docs_path, output_path)
-    exitcode |= do_docs_pdf(docs_path, output_path)
+    retval = do_docs_html(docs_path, output_path)
+    exitcode |= retval
+    retval = do_docs_pdf(docs_path, output_path)
+    exitcode |= retval
 
     return exitcode
 
