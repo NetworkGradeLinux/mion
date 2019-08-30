@@ -300,7 +300,7 @@ def parse_args():
                         help='Start a development shell instead of running bitbake directly')
 
     parser.add_argument('-o', '--output-dir',
-                        help='Output directory for final artifacts, defaults to `$BUILDDIR/images`')
+                        help='Output directory for final artifacts, defaults to `build/images`')
 
     parser.add_argument('--all-machines', action='store_true',
                         help='Build for all supported machines')
