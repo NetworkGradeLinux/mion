@@ -80,14 +80,14 @@ The key variables in a system profile are as follows:
 * ``ORYX_SYSTEM_PROFILE_PACKAGES``: This is the list of additional packages to
   install into the rootfs for this system profile.
 
-* ``ORYX_SYSTEM_PROFILE_PUBLISH_DEPENDS``: This is the list of bitbake tasks
-  which must be completed before attempting to publish artifacts. Typically it
-  will contain the ``oryx-image:do_build`` task which will create the rootfs
-  image and all its dependencies. Additional tasks may be added if needed.
+* ``ORYX_SYSTEM_PROFILE_OUTPUT_DEPENDS``: This is the list of bitbake tasks to
+  be completed before collecting artifacts for output to the images directory,
+  in addition to building ``oryx-image``.
 
-* ``ORYX_SYSTEM_PROFILE_PUBLISH_FILES``: This is the list of files to publish
-  into the ``pub`` directory. It typically contains the rootfs image and any
-  supporting files (such as a kernel image, bootloader image, etc).
+* ``ORYX_SYSTEM_PROFILE_OUTPUT_FILES``: This is the list of files to output to
+  the images directory, in addition to the image json file. It typically
+  contains the rootfs image and any supporting files (such as a kernel image,
+  bootloader image, etc).
 
 .. _application_profiles:
 
@@ -113,15 +113,21 @@ a more secure and manageable device.
 Three major system profiles are provided in this release:
 
 * ``full-cmdline``: This profile simply includes the OpenEmbedded full-cmdline
-  packagegroup. It is a good demonstration container as it has a user-friendly
-  set of command line tools installed with documentation.
+  packagegroup along with the SSH server. It is a good demonstration
+  container as it has a user-friendly set of command line tools installed
+  with documentation.
 
 * ``minimal``: This profile provides the minimal software needed to boot and run
-  a system. It is a good starting point for developing new application profiles.
+  a system along with the SSH server. It is a good starting point for developing
+  new application profiles.
 
 * ``host``: This profile includes runc and other tools needed to setup Linux
   containers. It provides a host environment for images built using the guest
   system profile described above.
+
+* ``host-test``: This profile includes everything in the ``host`` application
+  profile plus additional testing and debug tools. It is primarily used in the
+  development of Oryx itself.
 
 It's expected that Oryx will be enhanced by the addition of many more
 application profiles in future releases.
@@ -161,6 +167,8 @@ variables are used to configure the guest container:
 OpenEmbedded Recipes
 ====================
 
+.. _oryx-image:
+
 oryx-image
 ----------
 
@@ -175,31 +183,24 @@ such as the distro name, version and home URL as well as Oryx-specific
 information such as the selected system profile, application profile and
 machine.
 
+To simplify deployment of Oryx images and prevent artifacts being overwritten by
+subsequent builds for different machine, system profile or application profile
+settings, the output files are collected into an images directory (usually
+placed in ``build/images``). Within this images directory, a hierarchy of
+subdirectories is created for each machine, system profile and application
+profile. As only those files required by the boot or installation method used
+with a given system profile are copied into the new directory, there is no
+clutter or confusion.
+
+In normal usage, the top-level bitbake recipe used to build an Oryx image will
+therefore be ``oryx-image``.
+
 image-json-file
 ---------------
 
 The ``image-json-file`` recipe creates a JSON formatted data file for the
 current image which is used by :ref:`oryxcmd` when downloading the image onto a
 host system.
-
-.. _oryx-publish:
-
-oryx-publish
-------------
-
-To simplify deployment of Oryx images we also have a top-level ``oryx-publish``
-recipe. This recipe copies files specified by the chosen system profile from the
-OpenEmbedded ``deploy/images`` directory to a new ``deploy/oryx`` directory. This
-may seem trivial but it gives two benefits. As only those files required by the
-boot or installation method used with a given system profile are copied into the
-new directory, there is no clutter or confusion.  Also, the ``deploy/oryx``
-directory has sub-directories for the current version, selected system profile
-and selected application profile and this ensures that an image produced for one
-configuration is not accidentally overwritten by a subsequent build for a
-different configuration.
-
-In normal usage, the top-level bitbake recipe used to build an Oryx image will
-therefore be ``oryx-publish``.
 
 Using Integrated Sources
 ========================
@@ -219,7 +220,7 @@ The full contents of the integrated Oryx Linux sources is as follows:
 * Additional supporting layers: ``meta-openembedded`` and
   ``meta-virtualisation``.
 
-* Additional BSP layers: ``meta-raspberrypi`` and ``meta-yocto``.
+* Additional BSP layers: ``meta-raspberrypi``.
 
 * The Oryx Linux distro layer: ``meta-oryx``.
 
@@ -227,15 +228,13 @@ The full contents of the integrated Oryx Linux sources is as follows:
   ``build/conf/bblayers.conf`` files which typically do not require further
   modification.
 
-* The ``build/conf/setenv`` environment setup script.
-
-* Build scripts and other supporting scripts under ``build/scripts/``.
+* Build script ``scripts/build.py``.
 
 Fetching and Updating Sources
 -----------------------------
 
 Integrated sources may be obtained either from a source release in ``.tar.xz``
-format, or from git using the ``repo`` tool.
+format, or from git.
 
 Using a Source Release
 ++++++++++++++++++++++
@@ -243,128 +242,143 @@ Using a Source Release
 Each point release of Oryx Linux includes a source tarball alongside the
 compiled images. This integrated source release contains all OpenEmbedded layers
 needed to build Oryx Linux images and is essentially a point-in-time snapshot of
-the sources which may be obtained from git using the ``repo`` tool.
+the sources which may be obtained from git.
 
-For the v0.4.0 release, this source release may be obtained from
-https://downloads.toganlabs.com/oryx/distro/0.4.0/oryx-0.4.0.tar.xz.
+For the v0.5.0 release, this source release may be obtained from
+https://downloads.toganlabs.com/oryx/distro/0.5.0/oryx-0.5.0.tar.xz.
 
 Once a source release has been downloaded, it simply needs to be extracted
-before following the steps in the `Preparing the Environment`_ section.
+before using the `Build Script`_.
 
 Using git
 +++++++++
 
-The Oryx git repo uses submodues to download and track the other git repos that
-it depends on so it must be cloned using the ``--recursive`` flag.
+The Oryx git repository uses submodues to download and track the other git
+repositories that it depends on so it must be cloned using the
+``--recurse-submodues`` flag.
 
 * To use the ``master`` branch of Oryx Linux::
 
-    git clone --recursive https://gitlab.com/oryx/oryx.git
+    git clone --recurse-submodules https://gitlab.com/oryx/oryx.git
 
   The ``master`` branch is the active development branch and so may incorporate
   breaking changes at any time. Follow the ``master`` branch at your own risk!
 
-* To use a stable branch of Oryx Linux, such as the ``sumo`` branch::
+* To use a formal release of Oryx Linux, such as the v0.5.0 release::
 
-    FIXME
-
-* To use a formal release of Oryx Linux, such as the v0.4.0 release::
-
-    FIXME
+    git clone --recurse-submodules https://gitlab.com/oryx/oryx.git \
+      -b v0.5.0
 
 The git submodules should be periodically updated with the following command::
 
     git submodule update
 
-Preparing the Environment
--------------------------
-
-Once the Oryx Linux source tree has been downloaded, simply source the
-``build/conf/setenv`` script in a bash shell to prepare the environment for a
-build::
-
-    source build/conf/setenv
-
 Build Script
 ------------
 
-Once you have sourced the ``setenv`` script, you can use run-build::
+Once you have the Oryx sources, you can use the build script to build images::
 
-    scripts/run-build.py [-C] [-L] [-V VERSION] [-M MACHINE] [-S SYSTEM_PROFILE] \
+    scripts/build.py [-C] [-L] [-V VERSION] [-M MACHINE] [-S SYSTEM_PROFILE] \
         [-A APPLICATION_PROFILE]
 
-This script uses bitbake to build the recipe specified by :ref:`oryx-publish`.
-
-Output files from run-build are saved in the pub directory, which is divided
-into subdirectories by, respectively: version, machine, system profile, and
-application profile. As well as the build output, this contains the log file
-if you have chosen -L, and a ``FAILED`` file if the build itself has failed.
+This script uses bitbake to build the recipe specified by :ref:`oryx-image` and
+so places output files into the images directory.
 
 Customising a build
 +++++++++++++++++++
 
 There are a number of ways available to customise your build.
 
-* ``-V VERSION``: Sets the ORYX_VERSION variable.
+* ``-V VERSION``, ``--build-version VERSION``: Sets the version string used to
+  identify this build. The default value is ``dev``.
 
-    * Allows you to specify the version string used to identify this build.
-    * The default value is "dev".
+* ``-S SYSTEM_PROFILE``, ``--system-profile SYSTEM_PROFILE``: Sets the system
+  profile to be built. See the :ref:`system_profiles` section for details on
+  how system profiles work, and what options are available. The default value
+  is ``native``.
 
-* ``-S SYSTEM_PROFILE``: System profile selection.
+* ``-A APPLICATION_PROFILE``, ``--application-profile APPLICATION_PROFILE``:
+  Sets the application profile to be built. See the :ref:`application_profiles`
+  section for details on application profiles, as well as the options available.
+  The default value is ``host``.
 
-    * This sets the ORYX_SYSTEM_PROFILE variable.
-    * See the :ref:`system_profiles` section for details on how system profiles
-      work, and what options are available.
-    * The default value is "native".
+* ``-M MACHINE``, ``--machine MACHINE``: Sets the target machine for which the
+  image will be built. Supported machines are: ``qemux86``, ``qemux86-64``, 
+  ``qemuarm``, ``qemuarm64, ``raspberrypi3`` and ``raspberrypi3-64``. The
+  default value is "qemux86". This argument may be specified more than once
+  to build multiple images in one invocation of the build script.
 
-* ``-A APPLICATION_PROFILE``: Application profile selection.
+* ``-T SYSTEM_PROFILE:APPLICATION_PROFILE``,
+  ``--target-pair SYSTEM_PROFILE:APPLICATION_PROFILE``: Sets the system profile
+  and application profile to be built. This is an alternative to specifying the
+  ``-S`` and ``-A`` arguments separately. This argument may be specified more
+  than once to build multiple images in one invocation of the build script
+  (which is not possible when using the ``-S`` and ``-A`` arguments). The images
+  are built in the order that they are given on the command line and for each
+  specified machine.
 
-    * This sets the ORYX_APPLICATION_PROFILE variable.
-    * See the :ref:`application_profiles` section for details on application
-      profiles, as well as the options available.
-    * The default value is "minimal".
+* ``-k``, ``--continue``: Continue as far as possible after an error. This is
+  equivalent to the ``-k`` argument to bitbake.
 
-* ``-M MACHINE``: Machine selection.
+* ``--oryx-base ORYX_BASE``: Set the base directory of the Oryx source tree. The
+  default value is the current directory so this argument is only useful in
+  special cases.
 
-    * This sets the MACHINE variable.
-    * Supported machines are: ``qemux86``, ``qemux86-64``, ``raspberrypi3``,
-      ``raspberrypi3-64``
-    * The default value is "qemux86".
+* ``--shell``: Start a development shell instead of running bitbake directly.
+  This allows more control over the invocation of bitbake and is typically
+  useful in development and in debugging failed builds.
 
-* ``-C``: Performs a clean build.
+* ``-o OUTPUT_DIR``, ``--output-dir OUTPUT_DIR``: Set the output directory where
+  build artifacts will be placed. The default value is ``build/images``.
 
-    * Removes the contents of the tmp directory before running bitbake.
-    * The default is not to perform a clean build, leaving the previous content
-      of the tmp directory intact.
+* ``--all-machines``: Build images for all supported target machines. This is an
+  alternative to manually specifying the full list with multiple ``-M``
+  arguments. See the release notes for the current list of supported machines.
 
-* ``-L``, ``--logs``: Captures and archives log files.
+* ``--rm-work``: Remove temporary files after building each recipe to save disk
+  space. This enables the ``rm_work`` bbclass.
 
-    * Log files are copied from the tmp directory into a ``logs.tar.gz`` file
-      located in:
-      ``pub/${ORYX_VERSION}/${MACHINE}/${ORYX_SYSTEM_PROFILE}/${ORYX_APPLICATION_PROFILE}``.
-    * The default is not to capture log files.
+* ``--mirror-archive``: Populate a download mirror for all open source
+  components included in the image. This is placed in the ``mirror`` directory
+  within the output directory. It can be published and used as a mirror or a
+  premirror for subsequent builds.
 
-For example::
+* ``--dl-dir DL_DIR``: Set the path for the downloads directory. The default
+  value is ``build/downloads``.
 
-    scripts/run-build.py -S native -A host -C
+* ``--sstate-dir SSTATE_DIR``: Set the path for the sstate cache directory. The
+  default value is ``build/sstate-cache``.
 
-Performs a clean build using the ``native`` system profile and the ``host``
-application profile.
+* ``--docs``: Build the documentation in HTML and PDF formats. The resulting
+  artifacts are placed in the ``docs`` directory within the output directory.
+
+* ``--source-archive``: Create an archive of the complete Oryx Project sources
+  including Bitbake and all Yocto Project layers. The archive is placed in the
+  output directory. This requires that the sources have been obtained from git
+  and not from a previously made source archive.
+
+* ``--checksum``: Create ``SHA256SUMS`` checksum files in each subdirectory
+  within the output directory that contains files.
+
+* ``--release``: Perform a full release of the Oryx Project. This is equivalent
+  to passing the following arguments::
+
+    -T guest:minimal -T guest:full-cmdline -T native:host -T native:host-test \
+    --all-machines --docs --mirror-archive --source-archive --checksum
 
 Using Bitbake Directly
 ----------------------
 
 During development it may be desirable to use bitbake directly, for example to
-build a particular recipe rather than a whole image. First, source the
-configuration script as described in `Preparing the Environment`_. Then it is
-possible to invoke bitbake from the build directory in the usual way.
+build a particular recipe rather than a whole image. The build script can be
+used to start a development shell (using the ``--shell`` argument documented
+above) with the environment variables set appropriately for building for any
+MACHINE, SYSTEM_PROFILE and APPLICATION_PROFILE combination. For example::
 
-Typically the ``MACHINE`` value is selected on the command line when running
-bitbake directly to avoid the need to modify ``local.conf``.
+    ./scripts/build.py -M raspberrypi3 -S native -A host --shell
 
-For example, to build just ``bash`` for the ``raspberrypi3`` device::
-
-    MACHINE=raspberrypi3 bitbake bash
+Once in the development shell, bitbake can be executed as normal. Remember to
+exit the development shell once you have finished using bitbake directly.
 
 Using meta-oryx as a Standalone Layer
 =====================================
@@ -392,4 +406,4 @@ another appropriate location to fully configure the Oryx Linux distribution:
 
 Once these variables are set appropriately, ``bitbake`` may be executed as
 normal. As discussed in the section on `OpenEmbedded Recipes`, the top-level
-command to build an Oryx Linux image is typically ``bitbake oryx-publish``.
+command to build an Oryx Linux image is typically ``bitbake oryx-image``.

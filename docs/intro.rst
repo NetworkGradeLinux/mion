@@ -54,9 +54,8 @@ additional benefits that we get in the embedded world:
 Support
 =======
 
-For support requests, bug reports or other feedback please open an issue in the
-`Togán Labs bug tracker <https://bugs.toganlabs.com/>`_ or contact us at
-`support@toganlabs.com <support@toganlabs.com>`_.
+Please report any bugs, feature requests or other feedback via the
+`Oryx issue tracker <https://gitlab.com/groups/oryx/-/issues>`_.
 
 Notation
 ========
@@ -68,8 +67,8 @@ The following notation is used for arguments:
 * ``[ARGUMENT]``: An optional argument.
 
 * ``ARGUMENTS...``: One or more required arguments which are not parsed
-  further by ``oryxcmd``. This is typically used for arguments which are
-  passed through to another application.
+  further, typically used when these are passed through to another
+  application.
 
 Copyright and Trademark notices
 ===============================

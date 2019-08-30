@@ -28,11 +28,7 @@ import os
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.doctest',
-    'sphinx.ext.todo',
-]
+extensions = []
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -40,7 +36,7 @@ templates_path = ['_templates']
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 # source_suffix = ['.rst', '.md']
-source_suffix = '.rst'
+source_suffix = ['.rst', '.md']
 
 # The encoding of source files.
 #source_encoding = 'utf-8-sig'
@@ -50,7 +46,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Oryx Linux'
-copyright = u'2017, Togán Labs Ltd'
+copyright = u'2017-2019, Togán Labs Ltd'
 author = u'Togán Labs Ltd'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -58,7 +54,7 @@ author = u'Togán Labs Ltd'
 # built documents.
 #
 # The short X.Y version.
-version = u'0.4.0'
+version = u'0.5.0'
 # The full version, including alpha/beta/rc tags.
 release = version
 
@@ -111,7 +107,8 @@ todo_include_todos = True
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'alabaster'
+import sphinx_rtd_theme
+html_theme = 'sphinx_rtd_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -208,17 +205,17 @@ htmlhelp_basename = 'OryxLinuxdoc'
 # -- Options for LaTeX output ---------------------------------------------
 
 latex_elements = {
-# The paper size ('letterpaper' or 'a4paper').
-#'papersize': 'letterpaper',
+    # The paper size ('letterpaper' or 'a4paper').
+    #'papersize': 'letterpaper',
 
-# The font size ('10pt', '11pt' or '12pt').
-#'pointsize': '10pt',
+    # The font size ('10pt', '11pt' or '12pt').
+    #'pointsize': '10pt',
 
-# Additional stuff for the LaTeX preamble.
-#'preamble': '',
+    # Additional stuff for the LaTeX preamble.
+    #'preamble': '',
 
-# Latex figure (float) alignment
-#'figure_align': 'htbp',
+    # Latex figure (float) alignment
+    #'figure_align': 'htbp',
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
@@ -358,3 +355,7 @@ epub_exclude_files = ['search.html']
 #epub_use_index = True
 
 highlight_language = 'none'
+
+source_parsers = {
+    '.md': 'recommonmark.parser.CommonMarkParser',
+}

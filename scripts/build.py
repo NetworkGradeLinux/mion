@@ -25,7 +25,7 @@ ALL_SUPPORTED_MACHINES = [
     'raspberrypi3-64'
 ]
 DEFAULT_SYSTEM_PROFILE = 'native'
-DEFAULT_APPLICATION_PROFILE = 'minimal'
+DEFAULT_APPLICATION_PROFILE = 'host'
 
 TargetPair = collections.namedtuple('TargetPair', ['system_profile', 'application_profile'])
 
@@ -112,7 +112,8 @@ def do_shell(machine, system_profile, application_profile):
 def do_build(args, machine, system_profile, application_profile):
     """Run a build using the configuration given in the args namespace"""
 
-    msg(">>> Building Oryx with ORYX_VERSION=%s MACHINE=%s SYSTEM_PROFILE=%s APPLICATION_PROFILE=%s"
+    msg(">>> Building Oryx with ORYX_VERSION=%s MACHINE=%s SYSTEM_PROFILE=%s "
+        "APPLICATION_PROFILE=%s"
         % (args.build_version, machine, system_profile, application_profile))
 
     bitbake_args = ""
@@ -196,11 +197,18 @@ def do_docs(args):
 
 def handle_release(args):
     if args.release:
-        if args.system_profile or args.application_profile or args.target_pair_list or args.machine_list or args.shell:
-            msg('ERROR: --release cannot be combined with --shell or specification of MACHINE, SYSTEM_PROFILE or APPLICATION_PROFILE values')
+        if args.system_profile or args.application_profile or args.target_pair_list or \
+                args.machine_list or args.shell:
+            msg('ERROR: --release cannot be combined with --shell or specification of MACHINE, '
+                'SYSTEM_PROFILE or APPLICATION_PROFILE values')
             sys.exit(1)
 
-        args.target_pair_list = ['guest:minimal', 'guest:full-cmdline', 'native:host', 'native:host-test']
+        args.target_pair_list = [
+            'guest:minimal',
+            'guest:full-cmdline',
+            'native:host',
+            'native:host-test'
+            ]
         args.all_machines = True
         args.docs = True
         args.mirror_archive = '1'
@@ -228,7 +236,8 @@ def handle_machine_list(args):
 def handle_target_list(args):
     args.target_list = []
 
-    # If only one of SYSTEM_PROFILE and APPLICATION_PROFILE is given, use the default value for the other
+    # If only one of SYSTEM_PROFILE and APPLICATION_PROFILE is given, use the
+    # default value for the other
     if args.application_profile and not args.system_profile:
         args.system_profile = DEFAULT_SYSTEM_PROFILE
     if args.system_profile and not args.application_profile:
@@ -242,12 +251,13 @@ def handle_target_list(args):
         (system_profile, application_profile) = target_pair.split(':')
         args.target_list.append(TargetPair(system_profile, application_profile))
 
-    if not len(args.target_list):
+    if not args.target_list:
         # Add the default target pair
         args.target_list.append(TargetPair(DEFAULT_SYSTEM_PROFILE, DEFAULT_APPLICATION_PROFILE))
 
     if len(args.target_list) != 1 and args.shell:
-        msg('ERROR: --shell requires exactly one target pair (SYSTEM_PROFILE & APPLICATION_PROFILE) to be specified')
+        msg('ERROR: --shell requires exactly one target pair (SYSTEM_PROFILE & '
+            'APPLICATION_PROFILE) to be specified')
         sys.exit(1)
 
 def handle_nothing_to_do(args):
@@ -270,11 +280,13 @@ def parse_args():
     parser.add_argument('-A', '--application-profile',
                         help='Application profile selection')
 
-    parser.add_argument('-T', '--target-pair', action='append', dest='target_pair_list', metavar='SYSTEM_PROFILE:APPLICATION_PROFILE', default=[],
+    parser.add_argument('-T', '--target-pair', action='append', dest='target_pair_list',
+                        metavar='SYSTEM_PROFILE:APPLICATION_PROFILE', default=[],
                         help='Target pair selection (can be specified multiple times), '
                         'an alternative to passing \'-S\' & \'-A\'')
 
-    parser.add_argument('-M', '--machine', action='append', dest='machine_list', metavar='MACHINE', default=[],
+    parser.add_argument('-M', '--machine', action='append', dest='machine_list',
+                        metavar='MACHINE', default=[],
                         help='Machine selection (can be specified multiple times)')
 
     parser.add_argument('-k', '--continue', dest='bitbake_continue', action='store_true',
@@ -288,7 +300,7 @@ def parse_args():
                         help='Start a development shell instead of running bitbake directly')
 
     parser.add_argument('-o', '--output-dir',
-                        help='Output directory for final artifacts, defaults to `$BUILDDIR/images`')
+                        help='Output directory for final artifacts, defaults to `build/images`')
 
     parser.add_argument('--all-machines', action='store_true',
                         help='Build for all supported machines')

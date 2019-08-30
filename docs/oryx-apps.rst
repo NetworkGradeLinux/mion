@@ -23,7 +23,7 @@ Interactive Mode
 In the interactive mode, ``oryxcmd`` is started without specifying a command::
 
     $ oryxcmd
-    Welcome to oryxcmd (oryx-apps v0.2.4)
+    Welcome to oryxcmd (oryx-apps v0.3.0)
     oryxcmd>
 
 At the ``oryxcmd`` prompt, any of the supported `Commands`_ may be executed. For
@@ -81,8 +81,8 @@ Arguments:
 
 Example::
 
-    oryxcmd> add_source oryx http://downloads.toganlabs.com/oryx/distro/0.4.0/raspberrypi3
-    Added source "oryx" with URL "http://downloads.toganlabs.com/oryx/distro/0.4.0/raspberrypi3"
+    oryxcmd> add_source oryx http://downloads.toganlabs.com/oryx/distro/0.5.0/raspberrypi3
+    Added source "oryx" with URL "http://downloads.toganlabs.com/oryx/distro/0.5.0/raspberrypi3"
 
 remove_source
 +++++++++++++
@@ -135,7 +135,7 @@ Example::
 
     oryxcmd> show_source oryx
     {
-        "url": "http://downloads.toganlabs.com/oryx/distro/0.4.0/raspberrypi3"
+        "url": "http://downloads.toganlabs.com/oryx/distro/0.5.0/raspberrypi3"
     }
 
 add_guest
@@ -220,21 +220,30 @@ Example::
     oryxcmd> show_guest test
     {
         "autostart_enabled": 0,
-	"image": {
-	    "APPLICATION_PROFILE": "minimal",
-            "COMMAND": "/bin/sh",
-	    "DISTRO": "oryx",
-	    "MACHINE": "raspberrypi3",
+	    "image": {
+	        "APPLICATION_PROFILE": "minimal",
+            "CAPABILITIES": [
+                "CAP_AUDIT_WRITE",
+                "CAP_KILL",
+                "CAP_NET_BIND_SERVICE",
+                "CAP_SYS_CHROOT",
+                "CAP_SETGID",
+                "CAP_SETUID"
+            ],
+            "COMMAND": "/sbin/start-sshd",
+	        "DISTRO": "oryx",
+	        "MACHINE": "raspberrypi3",
             "ROOTFS": "oryx-guest-minimal-raspberrypi3.tar.xz",
-	    "SYSTEM_PROFILE": "guest",
-	    "VERSION": "0.4.0"
-	},
-	"image_name": "minimal",
-	"path": "/var/lib/oryx-guests/test",
-	"source": {
-	    "url": "http://downloads.toganlabs.com/oryx/distro/0.4.0/raspberrypi3"
-	},
-	"source_name": "oryx"
+	        "SYSTEM_PROFILE": "guest",
+	        "SYSTEM_PROFILE_TYPE": "guest",
+	        "VERSION": "0.5.0"
+        },
+        "image_name": "minimal",
+        "path": "/var/lib/oryx-guests/test",
+        "source": {
+            "url": "http://downloads.toganlabs.com/oryx/distro/0.5.0/raspberrypi3"
+        },
+        "source_name": "oryx"
     }
 
 enable_guest
@@ -326,7 +335,7 @@ Example::
 
     oryxcmd> autostart_all
     Started guest "test"
-    Autostart all enabled guests complete
+    Started 1 of 1 enabled guests
 
 autostop_all
 ++++++++++++
@@ -343,7 +352,61 @@ Example::
 
     oryxcmd> autostop_all
     Stopped guest "test"
-    Autostop all running guests complete
+    Stopped 1 of 1 guests
+
+preconfigure
+++++++++++++
+
+Read pre-configuration data from `/usr/share/oryx/preconfig.d` and add the
+listed sources and guests.
+
+Usage::
+
+    preconfigure
+
+This command has no arguments.
+
+Example::
+
+    oryxcmd> preconfigure
+    Added source "local" with URL "file:///usr/share/oryx/local-feed"
+    Added guest "preconfig-test" from image "local:minimal"
+    Enabled guest "preconfig-test"
+
+startup
++++++++
+
+Convenience function for use in systemd service file. Runs 'preconfigure'
+then 'autostart_all'.
+
+Usage::
+
+    startup
+
+This command has no arguments.
+
+Example::
+
+    oryxcmd> startup
+    Started guest "preconfig-test"
+    Started 1 of 1 enabled guests
+
+shutdown
+++++++++
+
+Convenience function for use in systemd service file. Runs 'autostop_all'.
+
+Usage::
+
+    shutdown
+
+This command has no arguments.
+
+Example::
+
+    oryxcmd> shutdown
+    Stopped guest "preconfig-test"
+    Stopped 1 of 1 guests
 
 runc
 ++++
@@ -382,10 +445,10 @@ Example::
     
     Documented commands (type help <topic>):
     ========================================
-    add_guest      disable_guest  list_guests    runc         stop_guest
-    add_source     enable_guest   list_sources   show_guest   version
-    autostart_all  exit           remove_guest   show_source
-    autostop_all   help           remove_source  start_guest
+    add_guest      disable_guest  list_guests   remove_source  shutdown     version
+    add_source     enable_guest   list_sources  runc           start_guest
+    autostart_all  exit           preconfigure  show_guest     startup
+    autostop_all   help           remove_guest  show_source    stop_guest
     
     Miscellaneous help topics:
     ==========================
@@ -406,7 +469,7 @@ This command has no arguments.
 Example::
 
     oryxcmd> version
-    oryxcmd (oryx-apps v0.2.4)
+    oryxcmd (oryx-apps v0.3.0)
 
 exit
 ++++

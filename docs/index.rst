@@ -10,10 +10,4 @@ Oryx Linux |version| documentation
    using-oryx-linux
    oryx-apps
    building-images
-
-.. only:: html
-
-    Indices and tables
-    ==================
-
-    * :ref:`search`
+   contributing

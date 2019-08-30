@@ -5,6 +5,83 @@ Release History
 Oryx Linux
 ==========
 
+v0.5.0
+++++++
+
+Changes since v0.4.0:
+
+* Updated to OpenEmbedded "warrior" stable release.
+
+* Updated to oryx-apps v0.3.0. See the oryx-apps release notes for further
+  details.
+
+* Updated to the Linux LTS release series 4.19.y for all supported platforms.
+
+* Switched to a new ``oryx`` repository using git submodules instead of the repo
+  tool to pull together all the required components. The ``oryx-build`` and
+  ``documentation`` repositories are retired and their contents is merged
+  into the new top level. Local patches to the submodules are staged in the
+  ``patches`` directory.
+
+* Updated the list of supported machines.
+
+* Moved the build script to ``scripts/build.py``, overhaul and expand. It is no
+  longer necessary to source ``build/conf/setenv`` before running the build
+  script. Support for capturing task logs and running clean builds has been
+  dropped. Support for several new arguments was added to the build script,
+  see the command reference for details.
+
+* Support creation of a mirror archive containing all open source components
+  downloaded during the build. This may be used as part of the copyleft license
+  compliance process as well as allowing images to be re-built from source
+  without needing to re-download these components from their original location.
+
+* It's now possible to build multiple images in one run of the build script by
+  passing multiple ``-M`` and ``-T`` arguments. Each listed system profile and
+  application profile pair will be built for each listed machine.
+
+* Added contribution guidelines.
+
+* Switched to a Buildbot CI instance at https://bb.oryx-linux.org instead of
+  using GitLab CI.
+
+* Switched to the systemd init system and the glibc C library.
+
+* Added a new ``host-test`` application profile which extends the ``host``
+  profile with various testing utilities.
+
+* Added support for the creation of a local feed of guest images within the
+  root file system of a native image. This allows offline creation of guests on
+  the target device.
+
+* Enabled security flags when building Oryx images to improve our security.
+
+The following platforms are supported in this release:
+
+* ``qemux86``
+
+* ``qemux86-64``
+
+* ``qemuarm``
+
+* ``qemuarm64``
+
+* ``raspberrypi3``
+
+* ``raspberrypi3-64``
+
+This release is available in the following forms:
+
+* Source code via git: See tag "v0.5.0" in the repository at
+  https://gitlab.com/oryx/oryx.git.
+
+* Source code tarball: See
+  https://www.toganlabs.com/downloads/oryx/distro/0.5.0/oryx-0.5.0.tar.xz.
+
+* Various compiled images: See files under
+  https://www.toganlabs.com/downloads/oryx/distro/0.5.0/.
+
+
 v0.4.0
 ++++++
 
@@ -192,6 +269,45 @@ This release is available in the following forms:
 
 oryx-apps
 =========
+
+v0.3.0
+++++++
+
+This is a feature release of the oryx-apps project. The following changes were
+made since v0.2.5:
+
+* Added ``preconfigure`` command which parses preconfiguration data from the 
+  ``/usr/share/oryx/preconfig.d`` directory and sets up sources and guests
+  accordingly.
+
+* Added ``startup`` and ``shutdown`` commands for the convenience of the systemd
+  service files.
+
+* Ensured that the oryxcmd state file is always created with valid json data.
+
+This release is available in the following forms:
+
+* Source code via git: See tag "v0.3.0" in the git repository at
+  https://gitlab.com/oryx/oryx-apps.git
+
+* Source code tarball: See
+  https://www.toganlabs.com/downloads/oryx/oryx-apps/0.3.0/oryx-apps-0.3.0.tar.xz
+
+v0.2.5
+++++++
+
+This is a feature release of the oryx-apps project. The following features are
+added:
+
+* Support switch to systemd.
+
+This release is available in the following forms:
+
+* Source code via git: See tag "v0.2.5" in the git repository at
+  https://gitlab.com/oryx/oryx-apps.git
+
+* Source code tarball: See
+  https://www.toganlabs.com/downloads/oryx/oryx-apps/0.2.5/oryx-apps-0.2.5.tar.xz
 
 v0.2.4
 ++++++
