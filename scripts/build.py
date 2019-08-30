@@ -25,7 +25,7 @@ ALL_SUPPORTED_MACHINES = [
     'raspberrypi3-64'
 ]
 DEFAULT_SYSTEM_PROFILE = 'native'
-DEFAULT_APPLICATION_PROFILE = 'minimal'
+DEFAULT_APPLICATION_PROFILE = 'host'
 
 TargetPair = collections.namedtuple('TargetPair', ['system_profile', 'application_profile'])
 
