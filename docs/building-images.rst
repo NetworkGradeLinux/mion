@@ -89,6 +89,16 @@ The key variables in a system profile are as follows:
   contains the rootfs image and any supporting files (such as a kernel image,
   bootloader image, etc).
 
+* ``ORYX_SYSTEM_PROFILE_TYPE``: This selects how the resulting image will be
+  used and must be set to one of the following options. These match the two core
+  system profiles included with Oryx, allowing additional customised native and
+  guest system profiles to be defined with different names.
+
+    * ``native``: The resulting image will run directly on the target hardware.
+
+    * ``guest``: The resulting image will run as a container managed by
+      ``oryxcmd``.
+
 .. _application_profiles:
 
 Application Profiles
