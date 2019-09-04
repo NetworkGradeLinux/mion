@@ -174,6 +174,97 @@ variables are used to configure the guest container:
   service or application. For an example of a start script see the
   ``start-sshd`` script and recipe in the ``meta-oryx`` layer.
 
+Preconfiguration and the Local Image Feed
+=========================================
+
+Oryx Linux supports the preconfiguration of sources and guests defined at build
+time so that these do not need to be created by manually invoking oryxcmd at
+runtime. This is done by writing recipes which install preconfiguration files
+into ``/usr/share/oryx/preconfig.d`` where the oryxcmd will process them on
+first boot. These files are parsed in alphanumeric sort order so it's
+recommended to use a 2 digit prefix on all file names to enfore the desired
+processing order. Once parsed, the options creating sources are handled first
+followed by the options creating guests.
+
+The syntax of preconfiguration files is based on the INI configuration file
+format with sections for each source or guest that should be created on first
+boot.
+
+Preconfiguring Sources
+----------------------
+
+A section with a heading of the format ``[source:NAME]`` defines a source with
+the given name.
+
+The following options are required to preconfigure a source:
+
+* ``url``: This is equivalent to the ``URL`` argument to the
+  :ref:`oryxcmd_add_source` oryxcmd action.
+
+Preconfiguring Guests
+---------------------
+
+A section with a heading of the format ``[guest:NAME]`` defines a guest with
+the given name.
+
+The following options are required to preconfigure a guest:
+
+* ``image``: This is equivalent to the ``IMAGE`` argument to the
+  :ref:`oryxcmd_add_guest` oryxcmd action.
+
+The following options may also be set as desired:
+
+* ``enable``: If this option is true then the guest in enabled after creation so
+  that it starts automatically on boot. This is equivalent to running
+  ``oryxcmd enable_guest`` after the guest is created.
+
+Preconfiguration Example
+------------------------
+
+The following example illustrates how sources and guests can be preconfigured.
+If this text is placed in a file under ``/usr/share/oryx/preconfig.d`` by a
+recipe then on first boot on the target the defined items will be created::
+
+    [source:onsite]
+    url = http://192.168.1.10/oryx/qemux86
+
+    [guest:test]
+    image = onsite:minimal
+    enable = True
+
+This is equivalent to running the following commands on the target on the first
+boot::
+
+    oryxcmd add_source onsite http://192.168.1.10/oryx/qemux86
+    oryxcmd add_guest test onsite:minimal
+    oryxcmd enable_guest test
+
+Using the Local Feed
+--------------------
+
+The recipe ``oryx-local-feed`` builds on the preconfiguration support to define
+a local feed with images stored in ``/usr/share/oryx/local-feed``. This allows
+guests to be created on the first boot of a device without requiring any network
+access to a remote source. The preconfiguration file to define the ``local``
+source is installed as part of this recipe and so it is not necessary to
+implement this yourself.
+
+All images which will be placed in the local feed must have already been built
+before the final native image is built. They must all use the ``guest``
+system profile (though support for other system profiles may be added in future
+releases).
+
+The local feed is configured by setting the following variables, typically in
+the application profile which will be used to build the final image:
+
+* ``ORYX_LOCAL_FEED_APPLICATION_PROFILES``: A whitespace separated list of
+  application profile names for which images have already been built with the
+  ``guest`` system profile. These images will be copied into the local feed in
+  the final image.
+
+For an example of how the local feed is used, see the ``host-test`` application
+profile.
+
 OpenEmbedded Recipes
 ====================
 
