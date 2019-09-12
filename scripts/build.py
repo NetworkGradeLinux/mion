@@ -81,6 +81,7 @@ def setup_common_env(args):
         'ORYX_OUTPUT_DIR',
         'ORYX_RM_WORK',
         'ORYX_MIRROR_ARCHIVE',
+        'ORYX_EXTRA_BBLAYERS',
         ])
 
     os.environ['ORYX_VERSION'] = args.build_version
@@ -101,17 +102,22 @@ def setup_common_env(args):
     if args.sstate_dir:
         os.environ['SSTATE_DIR'] = args.sstate_dir
 
-def setup_single_env(machine, system_profile, application_profile):
+def setup_single_env(args, machine, system_profile, application_profile):
     os.environ['MACHINE'] = machine
     os.environ['ORYX_SYSTEM_PROFILE'] = system_profile
     os.environ['ORYX_APPLICATION_PROFILE'] = application_profile
 
-def do_shell(machine, system_profile, application_profile):
+    extra_bblayers = []
+    if args.enable_mender:
+        extra_bblayers.append(os.path.join(args.oryx_base, 'meta-mender', 'meta-mender-core'))
+    os.environ['ORYX_EXTRA_BBLAYERS'] = " ".join(extra_bblayers)
+
+def do_shell(args, machine, system_profile, application_profile):
     """Start a shell where a user can run bitbake"""
 
     msg(">>> Entering Oryx development shell...")
 
-    setup_single_env(machine, system_profile, application_profile)
+    setup_single_env(args, machine, system_profile, application_profile)
 
     return subprocess.call('bash', cwd=os.environ['BUILDDIR'])
 
@@ -141,7 +147,7 @@ def do_build(args, machine, system_profile, application_profile):
     if args.bitbake_continue:
         bitbake_args += " -k"
 
-    setup_single_env(machine, system_profile, application_profile)
+    setup_single_env(args, machine, system_profile, application_profile)
 
     previous_sigint_handler = signal.signal(signal.SIGINT, handle_sigint)
     if sys.stdin.isatty():
@@ -340,6 +346,9 @@ def parse_args():
     parser.add_argument('--mirror-archive', action='store_const', const='1', default='0',
                         help='Populate a full source mirror')
 
+    parser.add_argument('--enable-mender', action='store_true',
+                        help='Enable Mender layers')
+
     parser.add_argument('--dl-dir',
                         help='Override path for downloads directory')
 
@@ -380,7 +389,7 @@ def main():
     if args.shell:
         machine = args.machine_list[0]
         target = args.target_list[0]
-        exitcode = do_shell(machine, target.system_profile, target.application_profile)
+        exitcode = do_shell(args, machine, target.system_profile, target.application_profile)
     else:
         exitcode = 0
         if not args.no_bitbake:
