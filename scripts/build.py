@@ -110,6 +110,8 @@ def setup_single_env(args, machine, system_profile, application_profile):
     extra_bblayers = []
     if args.enable_mender:
         extra_bblayers.append(os.path.join(args.oryx_base, 'meta-mender', 'meta-mender-core'))
+        if machine.startswith('raspberrypi'):
+            extra_bblayers.append(os.path.join(args.oryx_base, 'meta-mender', 'meta-mender-raspberrypi'))
     os.environ['ORYX_EXTRA_BBLAYERS'] = " ".join(extra_bblayers)
 
 def do_shell(args, machine, system_profile, application_profile):
