@@ -7,6 +7,9 @@ Summary
 
 This documentation covers the |version| version of Oryx Linux.
 
+The latest version of the documentation is available online at the
+`Oryx ReadTheDocs site <https://oryx.readthedocs.io/en/latest/>`_.
+
 Oryx Linux is a Linux® distribution targeted at embedded applications and based
 on the work of `The Yocto Project <https://www.yoctoproject.org/>`_ and
 `OpenEmbedded <https://www.openembedded.org/>`_.
@@ -56,6 +59,9 @@ Support
 
 Please report any bugs, feature requests or other feedback via the
 `Oryx issue tracker <https://gitlab.com/groups/oryx/-/issues>`_.
+
+Discussion about Oryx usage and development also occurs on the
+`Oryx mailing list <https://oryx.groups.io/g/devel>`_.
 
 Notation
 ========

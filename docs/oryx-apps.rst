@@ -63,6 +63,8 @@ The following command line arguments are supported by ``oryxcmd``:
 Commands
 --------
 
+.. _oryxcmd_add_source:
+
 add_source
 ++++++++++
 
@@ -137,6 +139,8 @@ Example::
     {
         "url": "http://downloads.toganlabs.com/oryx/distro/0.5.0/raspberrypi3"
     }
+
+.. _oryxcmd_add_guest:
 
 add_guest
 +++++++++
