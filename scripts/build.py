@@ -15,6 +15,7 @@ import subprocess
 import shutil
 import sys
 import tarfile
+import termios
 
 ALL_SUPPORTED_MACHINES = [
     'qemux86',
@@ -124,8 +125,16 @@ def do_build(args, machine, system_profile, application_profile):
     os.environ['ORYX_SYSTEM_PROFILE'] = system_profile
     os.environ['ORYX_APPLICATION_PROFILE'] = application_profile
 
-    return subprocess.call("bitbake %s oryx-image" % (bitbake_args), shell=True,
-                           cwd=os.environ['BUILDDIR'])
+    if sys.stdin.isatty():
+        tcattr = termios.tcgetattr(sys.stdin.fileno())
+
+    retval = subprocess.call("bitbake %s oryx-image" % (bitbake_args), shell=True,
+                             cwd=os.environ['BUILDDIR'])
+
+    if sys.stdin.isatty():
+        termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, tcattr)
+
+    return retval
 
 def do_source_archive(args):
     # Confirm presence of `git archive-all` handler as it's not commonly
