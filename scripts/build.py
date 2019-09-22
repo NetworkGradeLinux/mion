@@ -11,6 +11,7 @@
 import argparse
 import collections
 import os
+import signal
 import subprocess
 import shutil
 import sys
@@ -110,8 +111,23 @@ def do_shell(machine, system_profile, application_profile):
 
     return subprocess.call('bash', cwd=os.environ['BUILDDIR'])
 
+bitbake_process = None
+sigint_count = 0
+def handle_sigint(signum, frame):
+    global bitbake_process
+    global sigint_count
+
+    sigint_count += 1
+    if sigint_count >= 5:
+        msg(">>> Too many keyboard interrupts, exiting")
+        if bitbake_process:
+            bitbake_process.kill()
+        raise KeyboardInterrupt
+
 def do_build(args, machine, system_profile, application_profile):
     """Run a build using the configuration given in the args namespace"""
+
+    global bitbake_process
 
     msg(">>> Building Oryx with ORYX_VERSION=%s MACHINE=%s SYSTEM_PROFILE=%s "
         "APPLICATION_PROFILE=%s"
@@ -125,14 +141,17 @@ def do_build(args, machine, system_profile, application_profile):
     os.environ['ORYX_SYSTEM_PROFILE'] = system_profile
     os.environ['ORYX_APPLICATION_PROFILE'] = application_profile
 
+    previous_sigint_handler = signal.signal(signal.SIGINT, handle_sigint)
     if sys.stdin.isatty():
         tcattr = termios.tcgetattr(sys.stdin.fileno())
-
-    retval = subprocess.call("bitbake %s oryx-image" % (bitbake_args), shell=True,
-                             cwd=os.environ['BUILDDIR'])
-
+    previous_sigint_handler = signal.signal(signal.SIGINT, handle_sigint)
+    bitbake_process = subprocess.Popen("bitbake %s oryx-image" % (bitbake_args), shell=True,
+                                       cwd=os.environ['BUILDDIR'])
+    retval = bitbake_process.wait()
+    bitbake_process = None
     if sys.stdin.isatty():
         termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, tcattr)
+    signal.signal(signal.SIGINT, previous_sigint_handler)
 
     return retval
 
