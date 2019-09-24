@@ -250,17 +250,17 @@ source is installed as part of this recipe and so it is not necessary to
 implement this yourself.
 
 All images which will be placed in the local feed must have already been built
-before the final native image is built. They must all use the ``guest``
-system profile (though support for other system profiles may be added in future
-releases).
+before the final native image is built.
 
 The local feed is configured by setting the following variables, typically in
 the application profile which will be used to build the final image:
 
-* ``ORYX_LOCAL_FEED_APPLICATION_PROFILES``: A whitespace separated list of
-  application profile names for which images have already been built with the
-  ``guest`` system profile. These images will be copied into the local feed in
-  the final image.
+* ``ORYX_LOCAL_FEED_IMAGE``: A whitespace separated list of images to include
+  in the local feed. Each entry is of the form
+  ``SYSTEM_PROFILE:APPLICATION_PROFILE``, for example ``guest:minimal`` to
+  include the image built from the ``guest`` system profile and the
+  ``minimal`` application profile. These images will be copied into the local
+  feed directory in the final image.
 
 For an example of how the local feed is used, see the ``host-test`` application
 profile.
