@@ -26,6 +26,7 @@ ALL_SUPPORTED_MACHINES = [
     'raspberrypi3',
     'raspberrypi3-64'
 ]
+DEFAULT_MACHINE = ALL_SUPPORTED_MACHINES[0]
 DEFAULT_SYSTEM_PROFILE = 'native'
 DEFAULT_APPLICATION_PROFILE = 'host'
 
@@ -260,6 +261,9 @@ def handle_machine_list(args):
     if args.all_machines:
         args.machine_list = ALL_SUPPORTED_MACHINES
 
+    if not args.machine_list:
+        args.machine_list.append(DEFAULT_MACHINE)
+
     if len(args.machine_list) != 1 and args.shell:
         msg('ERROR: --shell requires exactly one machine to be specified')
         sys.exit(1)
@@ -289,12 +293,6 @@ def handle_target_list(args):
     if len(args.target_list) != 1 and args.shell:
         msg('ERROR: --shell requires exactly one target pair (SYSTEM_PROFILE & '
             'APPLICATION_PROFILE) to be specified')
-        sys.exit(1)
-
-def handle_nothing_to_do(args):
-    if not args.machine_list and not args.docs and not args.source_archive and not args.checksum:
-        msg('ERROR: Nothing to do. Please specify at least one machine or one of --docs, '
-            '--source-archive or --checksum')
         sys.exit(1)
 
 def parse_args():
@@ -361,6 +359,9 @@ def parse_args():
     parser.add_argument('--release', action='store_true',
                         help='Perform a full release build')
 
+    parser.add_argument('--no-bitbake', action='store_true',
+                        help='Disable bitbake invocation')
+
     args = parser.parse_args()
 
     # handle_release() must be called first as it pre-sets other arguments
@@ -368,7 +369,6 @@ def parse_args():
     handle_output_dir(args)
     handle_machine_list(args)
     handle_target_list(args)
-    handle_nothing_to_do(args)
 
     return args
 
@@ -383,10 +383,11 @@ def main():
         exitcode = do_shell(machine, target.system_profile, target.application_profile)
     else:
         exitcode = 0
-        for machine in args.machine_list:
-            for target in args.target_list:
-                retval = do_build(args, machine, target.system_profile, target.application_profile)
-            exitcode |= retval
+        if not args.no_bitbake:
+            for machine in args.machine_list:
+                for target in args.target_list:
+                    retval = do_build(args, machine, target.system_profile, target.application_profile)
+                exitcode |= retval
 
         if args.docs:
             retval = do_docs(args)
