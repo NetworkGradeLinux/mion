@@ -34,7 +34,7 @@ TargetPair = collections.namedtuple('TargetPair', ['system_profile', 'applicatio
 def msg(message):
     print(message, flush=True)
 
-def setup_env(args):
+def setup_common_env(args):
     """Setup the environment variables required to invoke bitbake"""
 
     env_whitelist = ' '.join([
@@ -100,14 +100,17 @@ def setup_env(args):
     if args.sstate_dir:
         os.environ['SSTATE_DIR'] = args.sstate_dir
 
+def setup_single_env(machine, system_profile, application_profile):
+    os.environ['MACHINE'] = machine
+    os.environ['ORYX_SYSTEM_PROFILE'] = system_profile
+    os.environ['ORYX_APPLICATION_PROFILE'] = application_profile
+
 def do_shell(machine, system_profile, application_profile):
     """Start a shell where a user can run bitbake"""
 
     msg(">>> Entering Oryx development shell...")
 
-    os.environ['MACHINE'] = machine
-    os.environ['ORYX_SYSTEM_PROFILE'] = system_profile
-    os.environ['ORYX_APPLICATION_PROFILE'] = application_profile
+    setup_single_env(machine, system_profile, application_profile)
 
     return subprocess.call('bash', cwd=os.environ['BUILDDIR'])
 
@@ -137,9 +140,7 @@ def do_build(args, machine, system_profile, application_profile):
     if args.bitbake_continue:
         bitbake_args += " -k"
 
-    os.environ['MACHINE'] = machine
-    os.environ['ORYX_SYSTEM_PROFILE'] = system_profile
-    os.environ['ORYX_APPLICATION_PROFILE'] = application_profile
+    setup_single_env(machine, system_profile, application_profile)
 
     previous_sigint_handler = signal.signal(signal.SIGINT, handle_sigint)
     if sys.stdin.isatty():
@@ -374,7 +375,7 @@ def parse_args():
 def main():
     args = parse_args()
 
-    setup_env(args)
+    setup_common_env(args)
 
     if args.shell:
         machine = args.machine_list[0]
