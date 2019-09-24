@@ -25,7 +25,7 @@ correct build artifacts are produced to match how the image will be used. As
 system profiles are orthogonal to machine selection, consistent boot or
 virtualisation methods may be enforced across multiple platforms.
 
-Two system profiles are provided in this release:
+The following system profiles are provided in this release:
 
 * ``native``: This profile indicates that the image will run "bare metal" on the
   chosen platform. Build artifacts suitable for writing to an SD card, USB stick
@@ -120,7 +120,7 @@ profile for each required application profile. With this method each application
 profile corresponds to a separate container within the host system resulting in
 a more secure and manageable device.
 
-Three major system profiles are provided in this release:
+The following application profiles are provided in this release:
 
 * ``full-cmdline``: This profile simply includes the OpenEmbedded full-cmdline
   packagegroup along with the SSH server. It is a good demonstration
