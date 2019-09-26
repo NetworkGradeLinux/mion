@@ -24,3 +24,4 @@
 [submodule "meta-mender"]
 	path = meta-mender
 	url = https://github.com/mendersoftware/meta-mender.git
+	branch = warrior
