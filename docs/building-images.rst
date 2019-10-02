@@ -564,6 +564,10 @@ The build script understands the following arguments:
     -T guest:minimal -T guest:full-cmdline -T native:host -T native:host-test \
     --all-machines --docs --mirror-archive --source-archive --checksum
 
+* ``--no-bitbake``: Disable bitbake invocation so that no images are built.
+  This argument is useful if you only want to build the documentation, create
+  a source archive or similar.
+
 Using Bitbake Directly
 ----------------------
 
