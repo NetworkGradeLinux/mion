@@ -66,6 +66,54 @@ The following notation is used for arguments:
   further, typically used when these are passed through to another
   application.
 
+Glossary
+========
+
+Application Profile
+  An application profile defines the software to be installed into an Oryx
+  image along with any required configuration. For more details see
+  :ref:`application_profiles`.
+
+System Profile
+  A system profile defines the way that an Oryx image is deployed on a target,
+  which artifacts are needed for deployment and how the image is started on the
+  target device. For more details see :ref:`system_profiles`.
+
+System Profile Type
+  System profiles are grouped into two types: ``native`` and ``guest``. This
+  determines the type of Oryx image that will be built as defined below.
+
+Image Type
+  Oryx images are grouped into two types, matching the corresponding system
+  profile types. These are defined below.
+
+Guest Image
+  A guest image is esstentially the template for an Oryx guest. It defines the
+  initial state of the rootfs within the guest, the Linux capabilities to be
+  assigned and the commands to run when the guest is started.
+
+Native Image
+  A native image is installed directly onto a target device and so includes
+  components like the kernel and bootloader which are not needed in a guest
+  image.
+
+Source
+  In the context of ``oryxcmd``, a source is the location from which guest
+  images can be obtained. This can be a directory on the local filesystem, a
+  website accessible over HTTP/HTTPS, or any other supported type of location.
+
+Guest
+  An Oryx guest is an application or service running within a Linux container
+  on an Oryx host system. The container isolation separates guests from each
+  other, from the host system and from hardware resources that they haven't
+  been given explicit permission to access.
+
+Host
+  An Oryx host system is typically built as a native image using the ``host``
+  application profile. This system includes the ``oryxcmd`` application and the
+  ``runc`` lightweight container engine, allowing guests to be deployed and
+  managed within the system.
+
 Copyright and Trademark notices
 ===============================
 
