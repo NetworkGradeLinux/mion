@@ -483,6 +483,34 @@ The following command may then be used to build the documentation::
 The resulting HTML and PDF artifacts are placed in the ``docs`` directory
 within the output directory.
 
+Starting a Development Shell
+++++++++++++++++++++++++++++
+
+During development it may be desirable to use bitbake directly, for example to
+build a particular recipe rather than a whole image. This can be achieved by
+starting a development shell using the build script with the ``--shell``
+argument. The ``-M``, ``-S``, ``-A`` and ``-T`` arguments can be used to
+select the machine, system profile and application profile that will be used
+for the build. However, note that it is not possible to invoke a development
+shell for more than one machine or more than one system profile and
+application profile pair at a time. In this mode of operation the build
+script will setup the required environment variables for an Oryx build and
+then start the bash shell.
+
+For example, to start a development shell with the ``raspberrypi3`` machine,
+``native`` system profile and ``host-test`` application profile selected::
+
+    ./scripts/build.py -M raspberrypi3 -S native -A host-test --shell
+
+Please note that the user and system bashrc files will be parsed by the new
+shell instance and this may interfere with the required environment variables
+set by the build script. If problems are observed when using the development
+shell but not when bitbake is directly invoked by the build script then the
+appropriate bashrc files should be examined.
+
+When the development shell is no longer needed, remember to end the session by
+using ``exit``.
+
 Argument Reference
 ++++++++++++++++++
 
@@ -570,20 +598,6 @@ The build script understands the following arguments:
 * ``--no-bitbake``: Disable bitbake invocation so that no images are built.
   This argument is useful if you only want to build the documentation, create
   a source archive or similar.
-
-Using Bitbake Directly
-----------------------
-
-During development it may be desirable to use bitbake directly, for example to
-build a particular recipe rather than a whole image. The build script can be
-used to start a development shell (using the ``--shell`` argument documented
-above) with the environment variables set appropriately for building for any
-MACHINE, SYSTEM_PROFILE and APPLICATION_PROFILE combination. For example::
-
-    ./scripts/build.py -M raspberrypi3 -S native -A host --shell
-
-Once in the development shell, bitbake can be executed as normal. Remember to
-exit the development shell once you have finished using bitbake directly.
 
 Using meta-oryx as a Standalone Layer
 =====================================
