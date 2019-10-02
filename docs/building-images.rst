@@ -460,6 +460,28 @@ host-test application profile, for all supported machines::
     ./scripts/build.py --all-machines -T guest:minimal -T native:host \
         -T native:host-test
 
+Building Documentation
+++++++++++++++++++++++
+
+The sources for this documentation are included in the Oryx repository under
+the ``docs`` directory. The `Sphinx documentation generator
+<http://www.sphinx-doc.org/en/master/>`_ is used to build HTML and PDF output
+from the reStructuredText and Markdown source files.
+
+Sphinx requires Python version 3.5 or later along with the ``pip`` tool. To
+install Sphinx and the required modules for building the Oryx documentation
+the ``requirements.txt`` file included with the documentation sources may be
+used as follows::
+
+    pip install -r docs/requirements.txt
+
+The following command may then be used to build the documentation::
+
+    ./scripts/build.py --docs --no-bitbake
+
+The resulting HTML and PDF artifacts are placed in the ``docs`` directory
+within the output directory.
+
 Argument Reference
 ++++++++++++++++++
 
