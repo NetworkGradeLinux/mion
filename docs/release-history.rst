@@ -5,6 +5,20 @@ Release History
 Oryx Linux
 ==========
 
+Release series status
++++++++++++++++++++++
+
+==============  ====================  ===============  ==================
+Release Series  Yocto Project Branch  Release Date     End-of-life Date
+==============  ====================  ===============  ==================
+v0.6.x          zeus                  Target Jan 2020  TBC
+v0.5.x          warrior               Target Oct 2019  2020-04-30
+v0.4.x          sumo                  2018-05-22       2019-05-31
+v0.3.x          rocko                 2017-11-13       2018-11-30
+v0.2.x          pyro                  2017-06-18       2018-05-31
+v0.1.x          N/A                   2016-12-26       Alpha release only
+==============  ====================  ===============  ==================
+
 v0.5.0
 ++++++
 
@@ -266,6 +280,12 @@ This release is available in the following forms:
 
 * Various compiled images: See files under
   https://www.toganlabs.com/downloads/oryx/distro/0.2.0/.
+
+v0.1.0
+++++++
+
+This was an initial alpha-quality release and is now only of historical
+interest.
 
 oryx-apps
 =========
