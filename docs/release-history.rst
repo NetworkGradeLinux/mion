@@ -31,9 +31,9 @@ Changes since v0.4.0:
 
 * Updated to the Linux LTS release series 4.19.y for all supported platforms.
 
-* Switched to a new ``oryx`` repository using git submodules instead of the repo
-  tool to pull together all the required components. The ``oryx-build`` and
-  ``documentation`` repositories are retired and their contents is merged
+* Switched to a new ``oryx`` repository using git submodules instead of the
+  repo tool to pull together all the required components. The ``oryx-build``
+  and ``documentation`` repositories are retired and their contents is merged
   into the new top level. Local patches to the submodules are staged in the
   ``patches`` directory.
 
@@ -150,13 +150,14 @@ Changes since v0.3.0:
 
     * https://downloads.toganlabs.com/oryx/oryx-apps/0.2.1/RELEASE_NOTES.txt
 
-* Added support for Beaglebone Black devices using the ``meta-yocto-bsp`` layer.
+* Added support for Beaglebone Black devices using the ``meta-yocto-bsp``
+  layer.
 
-* Added oryx-guests initscript to auto-start all enabled guests at boot and stop
-  all guests at shutdown.
+* Added oryx-guests initscript to auto-start all enabled guests at boot and
+  stop all guests at shutdown.
 
-* Allow configuration of Linux capabilities granted to guest containers. Example
-  application profiles intended for usage as guests (``minimal`` and
+* Allow configuration of Linux capabilities granted to guest containers.
+  Example application profiles intended for usage as guests (``minimal`` and
   ``full-cmdline`` profiles) select the capabilites needed to run sshd.
 
 * Add a ``start-sshd`` script, used in ``minimal`` and ``full-cmdline`` example
@@ -211,8 +212,9 @@ Changes since v0.2.0:
 
 * Use the Linux LTS release series 4.9.y for all supported platforms.
 
-* Switch guest image init system from ``oryx-guest-init`` to ``dumb-init``. This
-  is a more widely deployed and better tested tiny init system written in C.
+* Switch guest image init system from ``oryx-guest-init`` to ``dumb-init``.
+  This is a more widely deployed and better tested tiny init system written
+  in C.
 
 * Add ``ca-certificates`` into the host application profile to support the use
   of https source URLs.
@@ -296,12 +298,12 @@ v0.3.0
 This is a feature release of the oryx-apps project. The following changes were
 made since v0.2.5:
 
-* Added ``preconfigure`` command which parses preconfiguration data from the 
+* Added ``preconfigure`` command which parses preconfiguration data from the
   ``/usr/share/oryx/preconfig.d`` directory and sets up sources and guests
   accordingly.
 
-* Added ``startup`` and ``shutdown`` commands for the convenience of the systemd
-  service files.
+* Added ``startup`` and ``shutdown`` commands for the convenience of the
+  systemd service files.
 
 * Ensured that the oryxcmd state file is always created with valid json data.
 
@@ -332,7 +334,8 @@ This release is available in the following forms:
 v0.2.4
 ++++++
 
-This is a bugfix release of the oryx-apps project. The following bugs are fixed:
+This is a bugfix release of the oryx-apps project. The following bugs are
+fixed:
 
 * Version number was not updated correctly for previous release.
 
@@ -434,7 +437,8 @@ This release is available in the following forms:
 v0.1.1
 ++++++
 
-This is a bugfix release of the oryx-apps project. The following bugs are fixed:
+This is a bugfix release of the oryx-apps project. The following bugs are
+fixed:
 
 * ``oryxcmd`` failed to create the ``/var/lib/oryx-guests`` directory on the
   first command invocation.

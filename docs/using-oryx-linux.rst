@@ -101,7 +101,8 @@ The SD card may then be removed and placed into the Raspberry Pi device itself.
 Logging In
 ==========
 
-After installation you can login as ``root`` with the default password ``oryx``.
+After installation you can login as ``root`` with the default password
+``oryx``.
 
 Adding Guest Containers
 =======================
@@ -141,8 +142,8 @@ Firstly, the appropriate official source for this release should be configured:
     oryxcmd add_source oryx \
         http://downloads.toganlabs.com/oryx/distro/0.5.0/raspberrypi3-64
 
-Once this source is configured, a guest container can be created from one of the
-following images:
+Once this source is configured, a guest container can be created from one of
+the following images:
 
 * ``minimal`` image::
 

@@ -2,20 +2,20 @@
 oryx-apps
 =========
 
-oryx-apps is a collection of applications which implement the core functionality
-of the Oryx Linux distro. However, oryx-apps is also available independently of
-Oryx Linux and so these applications may be re-used and integrated into other
-Linux distros if desired.
+oryx-apps is a collection of applications which implement the core
+functionality of the Oryx Linux distro. However, oryx-apps is also available
+independently of Oryx Linux and so these applications may be re-used and
+integrated into other Linux distros if desired.
 
 .. _oryxcmd:
 
 oryxcmd
 =======
 
-``oryxcmd`` is the core of the "host" application profile within Oryx Linux. It
-is responsible for the management of guest containers and the sources from which
-container images may be obtained. As a command-line application it has both an
-interactive mode and a non-interactive mode.
+``oryxcmd`` is the core of the "host" application profile within Oryx Linux.
+It is responsible for the management of guest containers and the sources from
+which container images may be obtained. As a command-line application it has
+both an interactive mode and a non-interactive mode.
 
 Interactive Mode
 ----------------
@@ -26,8 +26,8 @@ In the interactive mode, ``oryxcmd`` is started without specifying a command::
     Welcome to oryxcmd (oryx-apps v0.3.0)
     oryxcmd>
 
-At the ``oryxcmd`` prompt, any of the supported `Commands`_ may be executed. For
-example::
+At the ``oryxcmd`` prompt, any of the supported `Commands`_ may be executed.
+For example::
 
     oryxcmd> list_sources
     oryx
@@ -39,9 +39,9 @@ To leave interactive mode, use the ``exit`` command::
 Non-interactive Mode
 --------------------
 
-In the non-interactive mode, ``oryxcmd`` is executed with a command specified as
-an argument. The specified command will be executed and then ``oryxcmd`` will
-exit.  For example::
+In the non-interactive mode, ``oryxcmd`` is executed with a command specified
+as an argument. The specified command will be executed and then ``oryxcmd``
+will exit. For example::
 
     $ oryxcmd list_sources
     oryx
@@ -156,9 +156,9 @@ Arguments:
 * ``NAME``: An identifier which may be used to reference this source in future
   commands.
 
-* ``IMAGE``: A fully-qualified reference to an image which is available from one
-  of the sources which has been configured. The format of this reference is
-  ``<source>:<image_name>``:
+* ``IMAGE``: A fully-qualified reference to an image which is available from
+  one of the sources which has been configured. The format of this reference
+  is ``<source>:<image_name>``:
 
     - ``source``: The identifier of a registered source.
 
@@ -224,8 +224,8 @@ Example::
     oryxcmd> show_guest test
     {
         "autostart_enabled": 0,
-	    "image": {
-	        "APPLICATION_PROFILE": "minimal",
+        "image": {
+            "APPLICATION_PROFILE": "minimal",
             "CAPABILITIES": [
                 "CAP_AUDIT_WRITE",
                 "CAP_KILL",
@@ -235,12 +235,12 @@ Example::
                 "CAP_SETUID"
             ],
             "COMMAND": "/sbin/start-sshd",
-	        "DISTRO": "oryx",
-	        "MACHINE": "raspberrypi3",
+            "DISTRO": "oryx",
+            "MACHINE": "raspberrypi3",
             "ROOTFS": "oryx-guest-minimal-raspberrypi3.tar.xz",
-	        "SYSTEM_PROFILE": "guest",
-	        "SYSTEM_PROFILE_TYPE": "guest",
-	        "VERSION": "0.5.0"
+            "SYSTEM_PROFILE": "guest",
+            "SYSTEM_PROFILE_TYPE": "guest",
+            "VERSION": "0.5.0"
         },
         "image_name": "minimal",
         "path": "/var/lib/oryx-guests/test",
@@ -446,18 +446,17 @@ Arguments:
 Example::
 
     oryxcmd> help
-    
+
     Documented commands (type help <topic>):
     ========================================
     add_guest      disable_guest  list_guests   remove_source  shutdown     version
     add_source     enable_guest   list_sources  runc           start_guest
     autostart_all  exit           preconfigure  show_guest     startup
     autostop_all   help           remove_guest  show_source    stop_guest
-    
+
     Miscellaneous help topics:
     ==========================
     arguments
-    
 
 version
 +++++++

@@ -38,11 +38,13 @@ additional benefits that we get in the embedded world:
 
 * The ability to mix legacy software which is dependent on specific older
   versions of system libraries with an up-to-date and secure base system. This
-  is especially relevant in the embedded space where legacy applications abound.
+  is especially relevant in the embedded space where legacy applications
+  abound.
 
 * The ability to update and restart a full application stack cleanly and
-  quickly by restarting a container guest instead of rebooting the whole device.
-  For devices with long startup times there can be significant benefit here.
+  quickly by restarting a container guest instead of rebooting the whole
+  device. For devices with long startup times there can be significant
+  benefit here.
 
 Support
 =======
