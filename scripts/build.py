@@ -11,10 +11,12 @@
 import argparse
 import collections
 import os
+import signal
 import subprocess
 import shutil
 import sys
 import tarfile
+import termios
 
 ALL_SUPPORTED_MACHINES = [
     'qemux86',
@@ -24,6 +26,7 @@ ALL_SUPPORTED_MACHINES = [
     'raspberrypi3',
     'raspberrypi3-64'
 ]
+DEFAULT_MACHINE = ALL_SUPPORTED_MACHINES[0]
 DEFAULT_SYSTEM_PROFILE = 'native'
 DEFAULT_APPLICATION_PROFILE = 'host'
 
@@ -32,7 +35,7 @@ TargetPair = collections.namedtuple('TargetPair', ['system_profile', 'applicatio
 def msg(message):
     print(message, flush=True)
 
-def setup_env(args):
+def setup_common_env(args):
     """Setup the environment variables required to invoke bitbake"""
 
     env_whitelist = ' '.join([
@@ -98,19 +101,37 @@ def setup_env(args):
     if args.sstate_dir:
         os.environ['SSTATE_DIR'] = args.sstate_dir
 
+def setup_single_env(machine, system_profile, application_profile):
+    os.environ['MACHINE'] = machine
+    os.environ['ORYX_SYSTEM_PROFILE'] = system_profile
+    os.environ['ORYX_APPLICATION_PROFILE'] = application_profile
+
 def do_shell(machine, system_profile, application_profile):
     """Start a shell where a user can run bitbake"""
 
     msg(">>> Entering Oryx development shell...")
 
-    os.environ['MACHINE'] = machine
-    os.environ['ORYX_SYSTEM_PROFILE'] = system_profile
-    os.environ['ORYX_APPLICATION_PROFILE'] = application_profile
+    setup_single_env(machine, system_profile, application_profile)
 
     return subprocess.call('bash', cwd=os.environ['BUILDDIR'])
 
+bitbake_process = None
+sigint_count = 0
+def handle_sigint(signum, frame):
+    global bitbake_process
+    global sigint_count
+
+    sigint_count += 1
+    if sigint_count >= 5:
+        msg(">>> Too many keyboard interrupts, exiting")
+        if bitbake_process:
+            bitbake_process.kill()
+        raise KeyboardInterrupt
+
 def do_build(args, machine, system_profile, application_profile):
     """Run a build using the configuration given in the args namespace"""
+
+    global bitbake_process
 
     msg(">>> Building Oryx with ORYX_VERSION=%s MACHINE=%s SYSTEM_PROFILE=%s "
         "APPLICATION_PROFILE=%s"
@@ -120,12 +141,21 @@ def do_build(args, machine, system_profile, application_profile):
     if args.bitbake_continue:
         bitbake_args += " -k"
 
-    os.environ['MACHINE'] = machine
-    os.environ['ORYX_SYSTEM_PROFILE'] = system_profile
-    os.environ['ORYX_APPLICATION_PROFILE'] = application_profile
+    setup_single_env(machine, system_profile, application_profile)
 
-    return subprocess.call("bitbake %s oryx-image" % (bitbake_args), shell=True,
-                           cwd=os.environ['BUILDDIR'])
+    previous_sigint_handler = signal.signal(signal.SIGINT, handle_sigint)
+    if sys.stdin.isatty():
+        tcattr = termios.tcgetattr(sys.stdin.fileno())
+    previous_sigint_handler = signal.signal(signal.SIGINT, handle_sigint)
+    bitbake_process = subprocess.Popen("bitbake %s oryx-image" % (bitbake_args), shell=True,
+                                       cwd=os.environ['BUILDDIR'])
+    retval = bitbake_process.wait()
+    bitbake_process = None
+    if sys.stdin.isatty():
+        termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, tcattr)
+    signal.signal(signal.SIGINT, previous_sigint_handler)
+
+    return retval
 
 def do_source_archive(args):
     # Confirm presence of `git archive-all` handler as it's not commonly
@@ -190,8 +220,10 @@ def do_docs(args):
 
     os.makedirs(output_path, exist_ok=True)
 
-    exitcode |= do_docs_html(docs_path, output_path)
-    exitcode |= do_docs_pdf(docs_path, output_path)
+    retval = do_docs_html(docs_path, output_path)
+    exitcode |= retval
+    retval = do_docs_pdf(docs_path, output_path)
+    exitcode |= retval
 
     return exitcode
 
@@ -229,6 +261,9 @@ def handle_machine_list(args):
     if args.all_machines:
         args.machine_list = ALL_SUPPORTED_MACHINES
 
+    if not args.machine_list:
+        args.machine_list.append(DEFAULT_MACHINE)
+
     if len(args.machine_list) != 1 and args.shell:
         msg('ERROR: --shell requires exactly one machine to be specified')
         sys.exit(1)
@@ -258,12 +293,6 @@ def handle_target_list(args):
     if len(args.target_list) != 1 and args.shell:
         msg('ERROR: --shell requires exactly one target pair (SYSTEM_PROFILE & '
             'APPLICATION_PROFILE) to be specified')
-        sys.exit(1)
-
-def handle_nothing_to_do(args):
-    if not args.machine_list and not args.docs and not args.source_archive and not args.checksum:
-        msg('ERROR: Nothing to do. Please specify at least one machine or one of --docs, '
-            '--source-archive or --checksum')
         sys.exit(1)
 
 def parse_args():
@@ -330,6 +359,9 @@ def parse_args():
     parser.add_argument('--release', action='store_true',
                         help='Perform a full release build')
 
+    parser.add_argument('--no-bitbake', action='store_true',
+                        help='Disable bitbake invocation')
+
     args = parser.parse_args()
 
     # handle_release() must be called first as it pre-sets other arguments
@@ -337,14 +369,13 @@ def parse_args():
     handle_output_dir(args)
     handle_machine_list(args)
     handle_target_list(args)
-    handle_nothing_to_do(args)
 
     return args
 
 def main():
     args = parse_args()
 
-    setup_env(args)
+    setup_common_env(args)
 
     if args.shell:
         machine = args.machine_list[0]
@@ -352,10 +383,11 @@ def main():
         exitcode = do_shell(machine, target.system_profile, target.application_profile)
     else:
         exitcode = 0
-        for machine in args.machine_list:
-            for target in args.target_list:
-                retval = do_build(args, machine, target.system_profile, target.application_profile)
-            exitcode |= retval
+        if not args.no_bitbake:
+            for machine in args.machine_list:
+                for target in args.target_list:
+                    retval = do_build(args, machine, target.system_profile, target.application_profile)
+                exitcode |= retval
 
         if args.docs:
             retval = do_docs(args)

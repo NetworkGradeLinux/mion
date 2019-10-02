@@ -25,7 +25,7 @@ correct build artifacts are produced to match how the image will be used. As
 system profiles are orthogonal to machine selection, consistent boot or
 virtualisation methods may be enforced across multiple platforms.
 
-Two system profiles are provided in this release:
+The following system profiles are provided in this release:
 
 * ``native``: This profile indicates that the image will run "bare metal" on the
   chosen platform. Build artifacts suitable for writing to an SD card, USB stick
@@ -120,7 +120,7 @@ profile for each required application profile. With this method each application
 profile corresponds to a separate container within the host system resulting in
 a more secure and manageable device.
 
-Three major system profiles are provided in this release:
+The following application profiles are provided in this release:
 
 * ``full-cmdline``: This profile simply includes the OpenEmbedded full-cmdline
   packagegroup along with the SSH server. It is a good demonstration
@@ -250,17 +250,17 @@ source is installed as part of this recipe and so it is not necessary to
 implement this yourself.
 
 All images which will be placed in the local feed must have already been built
-before the final native image is built. They must all use the ``guest``
-system profile (though support for other system profiles may be added in future
-releases).
+before the final native image is built.
 
 The local feed is configured by setting the following variables, typically in
 the application profile which will be used to build the final image:
 
-* ``ORYX_LOCAL_FEED_APPLICATION_PROFILES``: A whitespace separated list of
-  application profile names for which images have already been built with the
-  ``guest`` system profile. These images will be copied into the local feed in
-  the final image.
+* ``ORYX_LOCAL_FEED_IMAGE``: A whitespace separated list of images to include
+  in the local feed. Each entry is of the form
+  ``SYSTEM_PROFILE:APPLICATION_PROFILE``, for example ``guest:minimal`` to
+  include the image built from the ``guest`` system profile and the
+  ``minimal`` application profile. These images will be copied into the local
+  feed directory in the final image.
 
 For an example of how the local feed is used, see the ``host-test`` application
 profile.
@@ -377,18 +377,93 @@ The git submodules should be periodically updated with the following command::
 Build Script
 ------------
 
-Once you have the Oryx sources, you can use the build script to build images::
+Once you have the Oryx sources, you can use the build script
+``scripts/build.py`` to build images. This script uses bitbake to build the
+recipe specified by :ref:`oryx-image` and so places output files into the
+images directory.
 
-    scripts/build.py [-C] [-L] [-V VERSION] [-M MACHINE] [-S SYSTEM_PROFILE] \
-        [-A APPLICATION_PROFILE]
+Building Single Images
+++++++++++++++++++++++
 
-This script uses bitbake to build the recipe specified by :ref:`oryx-image` and
-so places output files into the images directory.
+The build script can be used most straightforwardly to build a single Oryx
+Linux image along with any associated collateral (such as the
+``image_native.json`` or ``image_guest.json`` file as appropriate).
 
-Customising a build
-+++++++++++++++++++
+The build script defaults to selecting the ``qemux86`` machine, the ``native``
+system profile and the ``host`` application profile when building images. To
+build an image for this combination, simply invoke the build script with no
+arguments::
 
-There are a number of ways available to customise your build.
+    ./scripts/build.py
+
+Additional arguments may be passed to the build script to change the selected
+machine (``-M`` or ``--machine`` argument), system profile (``-S`` or 
+``--system-profile`` argument) and application profile (``-A`` or
+``--application-profile`` argument). For example, to build an image for the
+Raspberry Pi 3 device using the ``guest`` system profile and the ``minimal``
+application profile::
+
+    ./scripts/build.py -M raspberrypi3 -S guest -A minimal
+
+As an alternative to the above form, the ``-T`` argument can be used with a
+colon-separated system profile and application profile pair such as
+``native:host`` or ``guest:minimal``. For example, the above build can also be
+performed using the following command::
+
+    ./scripts/build.py -M raspberrypi3 -T guest:minimal
+
+Building Multiple Images in One Step
+++++++++++++++++++++++++++++++++++++
+
+The build script is also capable of building multiple images in a single
+execution, running bitbake more than once as necessary.
+
+Repeating the ``-S`` and ``-A`` arguments with different system profile or
+application profile selections would be ambiguous as it would not be clear how
+to pair up entries in the list of system profiles with entries in the list of
+application profiles. Instead, the ``-T`` argument must be used to specify
+multiple system profile and application profile pairs. The build script adds
+these pairs to an ordered list in the order that they are specified on the
+command line and this determines the order in which these builds are performed.
+This ordering may be important where one build depends on the results of
+another, such as when building the ``host-test`` application profile which
+requires a minimal guest image to have already been built for the same machine.
+For example, the following command can be used to successfully build this
+test image for the Raspberry Pi 3 device::
+
+    ./scripts/build.py -M raspberrypi3 -T guest:minimal -T native:host-test
+
+Note that this build may fail if ``-T native:host-test`` appeared first on the
+command line as the required guest image would not have been built.
+
+It is also possible to build images for multiple target machines by using the
+``-M`` argument more than once. Alternatively, the ``--all-machines`` argument
+may be passed to build images for all officially supported machines. For
+example, the following command can be used to build the native host image for
+both x86 and x86-64 QEMU machines::
+
+    ./scripts/build.py -M qemux86 -M qemux86-64 -S native -A host
+
+If both multiple machines and multiple system profile and application profile
+pairs are provided, each profile pair is built for each machine listed on the
+command line. For example, the following command can be used to build the
+minimal and full-cmdline guest images for both the 32-bit and 64-bit ARM QEMU
+machines::
+
+    ./scripts/build.py -M qemuarm -M qemuarm64 -T guest:minimal \
+        -T guest:full-cmdline
+
+As a futher example, the following command can be used to build the host and
+host-test native images, along with the minimal guest image required by the
+host-test application profile, for all supported machines::
+
+    ./scripts/build.py --all-machines -T guest:minimal -T native:host \
+        -T native:host-test
+
+Argument Reference
+++++++++++++++++++
+
+The build script understands the following arguments:
 
 * ``-V VERSION``, ``--build-version VERSION``: Sets the version string used to
   identify this build. The default value is ``dev``.
