@@ -9,7 +9,14 @@
 set -e
 shopt -s nullglob
 
-REPOLIST="bitbake openembedded-core meta-openembedded meta-raspberrypi meta-virtualization"
+REPOLIST=" \
+    bitbake \
+    openembedded-core \
+    meta-openembedded \
+    meta-raspberrypi \
+    meta-virtualization \
+    meta-mender \
+    "
 PATCHES_DIR="$(realpath $(dirname $0))"
 
 for repo in $REPOLIST; do
@@ -18,8 +25,12 @@ for repo in $REPOLIST; do
         echo "Aborting previous patch application"
         rm -rf "$gitdir/rebase-apply"
     fi
-    for p in "$PATCHES_DIR/$repo"/*; do
-        echo "Applying $p"
-        git -C $repo am "$p"
-    done
+    if [[ -e "$PATCHES_DIR/$repo" ]]; then
+        echo "Patching $repo..."
+        for p in "$PATCHES_DIR/$repo"/*; do
+            git -C $repo am "$p"
+        done
+    fi
 done
+
+echo "Finished applying patches"
