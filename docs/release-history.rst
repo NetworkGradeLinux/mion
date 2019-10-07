@@ -5,7 +5,7 @@ Release History
 Oryx Linux
 ==========
 
-Release series status
+Release Series Status
 +++++++++++++++++++++
 
 ==============  ====================  ===============  ==================

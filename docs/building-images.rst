@@ -40,7 +40,7 @@ The following system profiles are provided in this release:
 
 The system profile is determined by the ``ORYX_SYSTEM_PROFILE`` variable.
 
-Porting the native System Profile
+Porting the Native System Profile
 ---------------------------------
 
 When porting Oryx Linux to new target platforms it is usually necessary to
