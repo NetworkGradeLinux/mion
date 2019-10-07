@@ -1,16 +1,8 @@
-=========
-oryx-apps
-=========
-
-oryx-apps is a collection of applications which implement the core
-functionality of the Oryx Linux distro. However, oryx-apps is also available
-independently of Oryx Linux and so these applications may be re-used and
-integrated into other Linux distros if desired.
-
 .. _oryxcmd:
 
-oryxcmd
-=======
+=============
+Using oryxcmd
+=============
 
 ``oryxcmd`` is the core of the "host" application profile within Oryx Linux.
 It is responsible for the management of guest containers and the sources from
@@ -18,7 +10,7 @@ which container images may be obtained. As a command-line application it has
 both an interactive mode and a non-interactive mode.
 
 Interactive Mode
-----------------
+================
 
 In the interactive mode, ``oryxcmd`` is started without specifying a command::
 
@@ -37,7 +29,7 @@ To leave interactive mode, use the ``exit`` command::
     oryxcmd> exit
 
 Non-interactive Mode
---------------------
+====================
 
 In the non-interactive mode, ``oryxcmd`` is executed with a command specified
 as an argument. The specified command will be executed and then ``oryxcmd``
@@ -49,7 +41,7 @@ will exit. For example::
 Any of the supported `Commands`_ may be executed in this way.
 
 Command Line Arguments
-----------------------
+======================
 
 The following command line arguments are supported by ``oryxcmd``:
 
@@ -61,12 +53,12 @@ The following command line arguments are supported by ``oryxcmd``:
 * ``-V``, ``--version``: Print version string and exit.
 
 Commands
---------
+========
 
 .. _oryxcmd_add_source:
 
 add_source
-++++++++++
+----------
 
 Register a new source from which images may be fetched.
 
@@ -87,7 +79,7 @@ Example::
     Added source "oryx" with URL "http://downloads.toganlabs.com/oryx/distro/0.5.0/raspberrypi3"
 
 remove_source
-+++++++++++++
+-------------
 
 Remove a previously registered source.
 
@@ -105,7 +97,7 @@ Example::
     Removed source "oryx"
 
 list_sources
-++++++++++++
+------------
 
 List all currently registered sources.
 
@@ -121,7 +113,7 @@ Example::
     oryx
 
 show_source
-+++++++++++
+-----------
 
 Show details of a previously registered source in JSON format.
 
@@ -143,7 +135,7 @@ Example::
 .. _oryxcmd_add_guest:
 
 add_guest
-+++++++++
+---------
 
 Create a new guest container from an image.
 
@@ -173,7 +165,7 @@ Example::
     Added guest "test" from image "oryx:minimal"
 
 remove_guest
-++++++++++++
+------------
 
 Delete an existing guest container.
 
@@ -191,7 +183,7 @@ Example::
     Removed guest "test"
 
 list_guests
-+++++++++++
+-----------
 
 List all currently registered guests.
 
@@ -207,7 +199,7 @@ Example::
     test
 
 show_guest
-++++++++++
+----------
 
 Show details of a previously registered guest in JSON format.
 
@@ -251,7 +243,7 @@ Example::
     }
 
 enable_guest
-++++++++++++
+------------
 
 Enable auto-start of a previously registered guest during system boot.
 
@@ -269,7 +261,7 @@ Example::
     Enabled guest "test"
 
 disable_guest
-+++++++++++++
+-------------
 
 Disable auto-start of a previously registered guest during system boot.
 
@@ -287,7 +279,7 @@ Example::
     Disabled guest "test"
 
 start_guest
-+++++++++++
+-----------
 
 Start an existing guest container. The container is launched in the background,
 without access to the terminal where start_guest was executed.
@@ -306,7 +298,7 @@ Example::
     Started guest "test"
 
 stop_guest
-++++++++++
+----------
 
 Stop a running guest container. SIGTERM is sent to the container so that it can
 shutdown cleanly. After 10 seconds, the container is halted.
@@ -325,7 +317,7 @@ Example::
     Stopped guest "test"
 
 autostart_all
-+++++++++++++
+-------------
 
 Start all containers which have autostart enabled.
 
@@ -342,7 +334,7 @@ Example::
     Started 1 of 1 enabled guests
 
 autostop_all
-++++++++++++
+------------
 
 Stop all currently running containers.
 
@@ -359,7 +351,7 @@ Example::
     Stopped 1 of 1 guests
 
 preconfigure
-++++++++++++
+------------
 
 Read pre-configuration data from `/usr/share/oryx/preconfig.d` and add the
 listed sources and guests.
@@ -378,7 +370,7 @@ Example::
     Enabled guest "preconfig-test"
 
 startup
-+++++++
+-------
 
 Convenience function for use in systemd service file. Runs 'preconfigure'
 then 'autostart_all'.
@@ -396,7 +388,7 @@ Example::
     Started 1 of 1 enabled guests
 
 shutdown
-++++++++
+--------
 
 Convenience function for use in systemd service file. Runs 'autostop_all'.
 
@@ -413,7 +405,7 @@ Example::
     Stopped 1 of 1 guests
 
 runc
-++++
+----
 
 Execute ``runc`` for an existing guest container. See the documentation of
 ``runc`` for further details.
@@ -430,7 +422,7 @@ Arguments:
 * ``ARGS...``: Command line arguments passed through to the 'runc' application.
 
 help
-++++
+----
 
 List available commands with "help" or detailed help with "help cmd".
 
@@ -459,7 +451,7 @@ Example::
     arguments
 
 version
-+++++++
+-------
 
 Display version information.
 
@@ -475,7 +467,7 @@ Example::
     oryxcmd (oryx-apps v0.3.0)
 
 exit
-++++
+----
 
 Exit the interactive oryxcmd shell.
 

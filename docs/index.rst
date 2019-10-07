@@ -20,7 +20,7 @@ The latest version of the documentation is available online at the
 
    intro
    release-history
-   using-oryx-linux
-   oryx-apps
+   getting-started
+   using-oryxcmd
    building-images
    contributing

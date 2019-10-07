@@ -1,6 +1,6 @@
-================
-Using Oryx Linux
-================
+===============
+Getting Started
+===============
 
 This section describes how to install and use Oryx Linux on an embedded device.
 
@@ -28,8 +28,8 @@ platforms:
 
     * ``raspberrypi3-64``: Raspberry Pi 3 in 64-bit mode.
 
-Installation and Getting Started
-================================
+Installation
+============
 
 QEMU Systems
 ------------
@@ -97,7 +97,7 @@ After installation you can login as ``root`` with the default password
 Adding Guest Containers
 =======================
 
-One the Oryx Linux host system has been set up, the :ref:`oryxcmd` tool may be
+One the Oryx Linux host system has been set up, the ``oryxcmd`` tool may be
 used to create guest containers.
 
 Firstly, the appropriate official source for this release should be configured:
@@ -145,6 +145,6 @@ the following images:
 
 The guest image may then be booted using ``runc`` as follows::
 
-    oryxcmd runc test run test
+    oryxcmd start_guest test
 
-For further details, see the full documentation for the :ref:`oryxcmd` tool.
+For further details, see the :ref:`oryxcmd` section.
