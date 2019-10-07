@@ -19,11 +19,11 @@ specifies how the image we are building will be deployed onto the selected
 machine. Many platforms may be booted in multiple ways (local boot from flash
 memory vs remote boot via tftp for instance) and a system profile may be used
 to specify a boot mechanism. Additionally, an image may run under different
-virtualisation methods on a given platform and a system profile may be used
+virtualization methods on a given platform and a system profile may be used
 to specify the chosen method. In each case the system profile will ensure
 that the correct build artifacts are produced to match how the image will be
 used. As system profiles are orthogonal to machine selection, consistent boot
-or virtualisation methods may be enforced across multiple platforms.
+or virtualization methods may be enforced across multiple platforms.
 
 The following system profiles are provided in this release:
 
@@ -67,7 +67,7 @@ defined for each target platform:
   and bootloader this is usually left empty.
 
 Most platforms can be supported with modification of just the above variables.
-If further customisation is needed, see the following section on `Writing
+If further customization is needed, see the following section on `Writing
 System Profiles`_.
 
 Writing System Profiles
@@ -92,7 +92,7 @@ The key variables in a system profile are as follows:
 
 * ``ORYX_SYSTEM_PROFILE_TYPE``: This selects how the resulting image will be
   used and must be set to one of the following options. These match the two
-  core system profiles included with Oryx, allowing additional customised
+  core system profiles included with Oryx, allowing additional customized
   native and guest system profiles to be defined with different names.
 
     * ``native``: The resulting image will run directly on the target hardware.
@@ -168,10 +168,10 @@ variables are used to configure the guest container:
   ``capabilities(8)`` manual page.
 
 * ``ORYX_APPLICATION_COMMAND``: This is the main application command to execute
-  when the guest container is started. The command line is tokenised into
+  when the guest container is started. The command line is tokenized into
   separate arguments however no further parsing is performed (so for example
   environment variables cannot be used). The best practice is to create a start
-  script which performs any necessary initialisation and then starts the main
+  script which performs any necessary initialization and then starts the main
   service or application. For an example of a start script see the
   ``start-sshd`` script and recipe in the ``meta-oryx`` layer.
 
@@ -183,7 +183,7 @@ time so that these do not need to be created by manually invoking oryxcmd at
 runtime. This is done by writing recipes which install preconfiguration files
 into ``/usr/share/oryx/preconfig.d`` where the oryxcmd will process them on
 first boot. These files are parsed in alphanumeric sort order so it's
-recommended to use a 2 digit prefix on all file names to enfore the desired
+recommended to use a 2 digit prefix on all file names to enforce the desired
 processing order. Once parsed, the options creating sources are handled first
 followed by the options creating guests.
 
@@ -320,7 +320,7 @@ The full contents of the integrated Oryx Linux sources is as follows:
 * The corresponding version of ``bitbake``.
 
 * Additional supporting layers: ``meta-openembedded`` and
-  ``meta-virtualisation``.
+  ``meta-virtualization``.
 
 * Additional BSP layers: ``meta-raspberrypi``.
 
@@ -454,7 +454,7 @@ machines::
     ./scripts/build.py -M qemuarm -M qemuarm64 -T guest:minimal \
         -T guest:full-cmdline
 
-As a futher example, the following command can be used to build the host and
+As a further example, the following command can be used to build the host and
 host-test native images, along with the minimal guest image required by the
 host-test application profile, for all supported machines::
 

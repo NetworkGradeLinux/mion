@@ -164,10 +164,10 @@ Changes since v0.3.0:
 
 * Allow configuration of Linux capabilities granted to guest containers.
   Example application profiles intended for usage as guests (``minimal`` and
-  ``full-cmdline`` profiles) select the capabilites needed to run sshd.
+  ``full-cmdline`` profiles) select the capabilities needed to run sshd.
 
 * Add a ``start-sshd`` script, used in ``minimal`` and ``full-cmdline`` example
-  application profiles to launch sshd with necessary initialisation and output
+  application profiles to launch sshd with necessary initialization and output
   logging.
 
 * Drop obsolete ``demo`` application profile.

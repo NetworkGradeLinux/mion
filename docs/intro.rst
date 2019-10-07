@@ -32,7 +32,7 @@ The benefits of Linux containers have been discussed at length elsewhere so we
 won’t cover the general benefits here. However, it’s worth mentioning the
 additional benefits that we get in the embedded world:
 
-* The ability to isolate applications requiring access to specialised hardware
+* The ability to isolate applications requiring access to specialized hardware
   from those which just use ‘normal’ Linux interfaces such as the network and
   filesystems.
 
@@ -90,7 +90,7 @@ Image Type
   profile types. These are defined below.
 
 Guest Image
-  A guest image is esstentially the template for an Oryx guest. It defines the
+  A guest image is essentially the template for an Oryx guest. It defines the
   initial state of the rootfs within the guest, the Linux capabilities to be
   assigned and the commands to run when the guest is started.
 
