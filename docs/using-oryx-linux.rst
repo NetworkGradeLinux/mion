@@ -34,32 +34,24 @@ Installation and Getting Started
 QEMU Systems
 ------------
 
-Download the appropriate kernel and rootfs images for the desired QEMU platform
+Download the appropriate rootfs and kernel images for the desired QEMU platform
 from the v0.5.0 release:
 
-* `Kernel image [32-bit x86]
-  <https://downloads.toganlabs.com/oryx/distro/0.5.0/qemux86/native/host/bzImage-qemux86.bin>`_
+* x86:
+  `Rootfs image <https://downloads.toganlabs.com/oryx/distro/0.5.0/qemux86/native/host/oryx-native-host-qemux86.ext4.xz>`__,
+  `Kernel image <https://downloads.toganlabs.com/oryx/distro/0.5.0/qemux86/native/host/bzImage-qemux86.bin>`__
 
-* `Kernel image [64-bit x86-64]
-  <https://downloads.toganlabs.com/oryx/distro/0.5.0/qemux86-64/native/host/bzImage-qemux86-64.bin>`_
+* x86-64:
+  `Rootfs image <https://downloads.toganlabs.com/oryx/distro/0.5.0/qemux86-64/native/host/oryx-native-host-qemux86-64.ext4.xz>`__,
+  `Kernel image <https://downloads.toganlabs.com/oryx/distro/0.5.0/qemux86-64/native/host/bzImage-qemux86-64.bin>`__
 
-* `Kernel image [32-bit ARM]
-  <https://downloads.toganlabs.com/oryx/distro/0.5.0/qemuarm/native/host/zImage-qemuarm.bin>`_
+* 32-bit ARM:
+  `Rootfs image <https://downloads.toganlabs.com/oryx/distro/0.5.0/qemuarm/native/host/oryx-native-host-qemuarm.ext4.xz>`__,
+  `Kernel image <https://downloads.toganlabs.com/oryx/distro/0.5.0/qemuarm/native/host/zImage-qemuarm.bin>`__
 
-* `Kernel image [64-bit ARM]
-  <https://downloads.toganlabs.com/oryx/distro/0.5.0/qemuarm64/native/host/Image-qemuarm64.bin>`_
-
-* `Rootfs image [32-bit x86]
-  <https://downloads.toganlabs.com/oryx/distro/0.5.0/qemux86/native/host/oryx-native-host-qemux86.ext4.xz>`_
-
-* `Rootfs image [64-bit x86-64]
-  <https://downloads.toganlabs.com/oryx/distro/0.5.0/qemux86-64/native/host/oryx-native-host-qemux86-64.ext4.xz>`_
-
-* `Rootfs image [32-bit ARM]
-  <https://downloads.toganlabs.com/oryx/distro/0.5.0/qemuarm/native/host/oryx-native-host-qemuarm.ext4.xz>`_
-
-* `Rootfs image [64-bit ARM]
-  <https://downloads.toganlabs.com/oryx/distro/0.5.0/qemuarm64/native/host/oryx-native-host-qemuarm64.ext4.xz>`_
+* 64-bit ARM:
+  `Rootfs image <https://downloads.toganlabs.com/oryx/distro/0.5.0/qemuarm64/native/host/oryx-native-host-qemuarm64.ext4.xz>`__,
+  `Kernel image <https://downloads.toganlabs.com/oryx/distro/0.5.0/qemuarm64/native/host/Image-qemuarm64.bin>`__
 
 The rootfs image must first be decompressed::
 
