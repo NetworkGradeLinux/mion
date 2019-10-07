@@ -5,6 +5,20 @@ Release History
 Oryx Linux
 ==========
 
+Release Series Status
++++++++++++++++++++++
+
+==============  ====================  ===============  ==================
+Release Series  Yocto Project Branch  Release Date     End-of-life Date
+==============  ====================  ===============  ==================
+v0.6.x          zeus                  Target Jan 2020  TBC
+v0.5.x          warrior               Target Oct 2019  2020-04-30
+v0.4.x          sumo                  2018-05-22       2019-05-31
+v0.3.x          rocko                 2017-11-13       2018-11-30
+v0.2.x          pyro                  2017-06-18       2018-05-31
+v0.1.x          N/A                   2016-12-26       Alpha release only
+==============  ====================  ===============  ==================
+
 v0.5.0
 ++++++
 
@@ -17,9 +31,9 @@ Changes since v0.4.0:
 
 * Updated to the Linux LTS release series 4.19.y for all supported platforms.
 
-* Switched to a new ``oryx`` repository using git submodules instead of the repo
-  tool to pull together all the required components. The ``oryx-build`` and
-  ``documentation`` repositories are retired and their contents is merged
+* Switched to a new ``oryx`` repository using git submodules instead of the
+  repo tool to pull together all the required components. The ``oryx-build``
+  and ``documentation`` repositories are retired and their contents is merged
   into the new top level. Local patches to the submodules are staged in the
   ``patches`` directory.
 
@@ -54,7 +68,13 @@ Changes since v0.4.0:
   root file system of a native image. This allows offline creation of guests on
   the target device.
 
-* Enabled security flags when building Oryx images to improve our security.
+* Enabled security flags when building Oryx images.
+
+* Greatly improved the documentation and published to
+  https://oryx.readthedocs.io.
+
+* Added optional Mender.io Over-the-Air (OTA) update integration to support
+  reliable and remotely managed upgrade of native and guest software images.
 
 The following platforms are supported in this release:
 
@@ -136,17 +156,18 @@ Changes since v0.3.0:
 
     * https://downloads.toganlabs.com/oryx/oryx-apps/0.2.1/RELEASE_NOTES.txt
 
-* Added support for Beaglebone Black devices using the ``meta-yocto-bsp`` layer.
+* Added support for Beaglebone Black devices using the ``meta-yocto-bsp``
+  layer.
 
-* Added oryx-guests initscript to auto-start all enabled guests at boot and stop
-  all guests at shutdown.
+* Added oryx-guests initscript to auto-start all enabled guests at boot and
+  stop all guests at shutdown.
 
-* Allow configuration of Linux capabilities granted to guest containers. Example
-  application profiles intended for usage as guests (``minimal`` and
-  ``full-cmdline`` profiles) select the capabilites needed to run sshd.
+* Allow configuration of Linux capabilities granted to guest containers.
+  Example application profiles intended for usage as guests (``minimal`` and
+  ``full-cmdline`` profiles) select the capabilities needed to run sshd.
 
 * Add a ``start-sshd`` script, used in ``minimal`` and ``full-cmdline`` example
-  application profiles to launch sshd with necessary initialisation and output
+  application profiles to launch sshd with necessary initialization and output
   logging.
 
 * Drop obsolete ``demo`` application profile.
@@ -197,8 +218,9 @@ Changes since v0.2.0:
 
 * Use the Linux LTS release series 4.9.y for all supported platforms.
 
-* Switch guest image init system from ``oryx-guest-init`` to ``dumb-init``. This
-  is a more widely deployed and better tested tiny init system written in C.
+* Switch guest image init system from ``oryx-guest-init`` to ``dumb-init``.
+  This is a more widely deployed and better tested tiny init system written
+  in C.
 
 * Add ``ca-certificates`` into the host application profile to support the use
   of https source URLs.
@@ -267,6 +289,12 @@ This release is available in the following forms:
 * Various compiled images: See files under
   https://www.toganlabs.com/downloads/oryx/distro/0.2.0/.
 
+v0.1.0
+++++++
+
+This was an initial alpha-quality release and is now only of historical
+interest.
+
 oryx-apps
 =========
 
@@ -276,12 +304,12 @@ v0.3.0
 This is a feature release of the oryx-apps project. The following changes were
 made since v0.2.5:
 
-* Added ``preconfigure`` command which parses preconfiguration data from the 
+* Added ``preconfigure`` command which parses preconfiguration data from the
   ``/usr/share/oryx/preconfig.d`` directory and sets up sources and guests
   accordingly.
 
-* Added ``startup`` and ``shutdown`` commands for the convenience of the systemd
-  service files.
+* Added ``startup`` and ``shutdown`` commands for the convenience of the
+  systemd service files.
 
 * Ensured that the oryxcmd state file is always created with valid json data.
 
@@ -312,7 +340,8 @@ This release is available in the following forms:
 v0.2.4
 ++++++
 
-This is a bugfix release of the oryx-apps project. The following bugs are fixed:
+This is a bugfix release of the oryx-apps project. The following bugs are
+fixed:
 
 * Version number was not updated correctly for previous release.
 
@@ -414,7 +443,8 @@ This release is available in the following forms:
 v0.1.1
 ++++++
 
-This is a bugfix release of the oryx-apps project. The following bugs are fixed:
+This is a bugfix release of the oryx-apps project. The following bugs are
+fixed:
 
 * ``oryxcmd`` failed to create the ``/var/lib/oryx-guests`` directory on the
   first command invocation.

@@ -5,9 +5,9 @@ Building Oryx Linux Images
 ==========================
 
 Oryx Linux introduces two major new concepts to the OpenEmbedded build system:
-these are `System Profiles`_ and `Application Profiles`_. This section will also
-discuss how these concepts are integrated into the `OpenEmbedded Recipes`_ in
-the ``meta-oryx`` layer.
+these are `System Profiles`_ and `Application Profiles`_. This section will
+also discuss how these concepts are integrated into the `OpenEmbedded
+Recipes`_ in the ``meta-oryx`` layer.
 
 .. _system_profiles:
 
@@ -17,29 +17,30 @@ System Profiles
 A system profile complements the OpenEmbedded machine selection and essentially
 specifies how the image we are building will be deployed onto the selected
 machine. Many platforms may be booted in multiple ways (local boot from flash
-memory vs remote boot via tftp for instance) and a system profile may be used to
-specify a boot mechanism. Additionally, an image may run under different
-virtualisation methods on a given platform and a system profile may be used to
-specify the chosen method. In each case the system profile will ensure that the
-correct build artifacts are produced to match how the image will be used. As
-system profiles are orthogonal to machine selection, consistent boot or
-virtualisation methods may be enforced across multiple platforms.
+memory vs remote boot via tftp for instance) and a system profile may be used
+to specify a boot mechanism. Additionally, an image may run under different
+virtualization methods on a given platform and a system profile may be used
+to specify the chosen method. In each case the system profile will ensure
+that the correct build artifacts are produced to match how the image will be
+used. As system profiles are orthogonal to machine selection, consistent boot
+or virtualization methods may be enforced across multiple platforms.
 
 The following system profiles are provided in this release:
 
-* ``native``: This profile indicates that the image will run "bare metal" on the
-  chosen platform. Build artifacts suitable for writing to an SD card, USB stick
-  or embedded flash memory are produced and are then compressed to save space.
-  When possible, u-boot is enabled to provide greater boot-time flexibility.
+* ``native``: This profile indicates that the image will run "bare metal" on
+  the chosen platform. Build artifacts suitable for writing to an SD card,
+  USB stick or embedded flash memory are produced and are then compressed to
+  save space. When possible, u-boot is enabled to provide greater boot-time
+  flexibility.
 
-* ``guest``: This profile indicates that the image will run as a container guest
-  under runc. No bootloader or kernel is compiled for this profile. Build
-  artifacts are always compressed tar archives of a rootfs, ready for
+* ``guest``: This profile indicates that the image will run as a container
+  guest under runc. No bootloader or kernel is compiled for this profile.
+  Build artifacts are always compressed tar archives of a rootfs, ready for
   installation onto a host system.
 
 The system profile is determined by the ``ORYX_SYSTEM_PROFILE`` variable.
 
-Porting the native System Profile
+Porting the Native System Profile
 ---------------------------------
 
 When porting Oryx Linux to new target platforms it is usually necessary to
@@ -48,11 +49,11 @@ defined for each target platform:
 
 * ``IMAGE_FSTYPES``: This variable determines the format of the rootfs image
   which is created. For physical devices this is usually a complete image,
-  including kernel and bootloader, ready to be directly copied into flash memory
-  or onto an SD Card or USB stick. However for emulated targets this may simply
-  be a filesystem image. For officially supported platforms, ``xz`` compression
-  is usually used to reduce the storage and bandwidth requirements on our
-  servers.
+  including kernel and bootloader, ready to be directly copied into flash
+  memory or onto an SD Card or USB stick. However for emulated targets this
+  may simply be a filesystem image. For officially supported platforms,
+  ``xz`` compression is usually used to reduce the storage and bandwidth
+  requirements on our servers.
 
 * ``ORYX_ROOTFS_IMAGE``: This is the filename of the main rootfs image as
   produced by bitbake for the target platform. The existing values
@@ -66,8 +67,8 @@ defined for each target platform:
   and bootloader this is usually left empty.
 
 Most platforms can be supported with modification of just the above variables.
-If further customisation is needed, see the following section on `Writing System
-Profiles`_.
+If further customization is needed, see the following section on `Writing
+System Profiles`_.
 
 Writing System Profiles
 -----------------------
@@ -90,9 +91,9 @@ The key variables in a system profile are as follows:
   bootloader image, etc).
 
 * ``ORYX_SYSTEM_PROFILE_TYPE``: This selects how the resulting image will be
-  used and must be set to one of the following options. These match the two core
-  system profiles included with Oryx, allowing additional customised native and
-  guest system profiles to be defined with different names.
+  used and must be set to one of the following options. These match the two
+  core system profiles included with Oryx, allowing additional customized
+  native and guest system profiles to be defined with different names.
 
     * ``native``: The resulting image will run directly on the target hardware.
 
@@ -113,12 +114,12 @@ build a lightweight configuration of a library for one application profile but
 then enable additional options when building for a different application
 profile.
 
-An Oryx Linux image is built with only one application profile. The expected use
-case is to deploy the ``host`` application profile using the ``native`` system
-profile onto a device and build additional images using the ``guest`` system
-profile for each required application profile. With this method each application
-profile corresponds to a separate container within the host system resulting in
-a more secure and manageable device.
+An Oryx Linux image is built with only one application profile. The expected
+use case is to deploy the ``host`` application profile using the ``native``
+system profile onto a device and build additional images using the ``guest``
+system profile for each required application profile. With this method each
+application profile corresponds to a separate container within the host
+system resulting in a more secure and manageable device.
 
 The following application profiles are provided in this release:
 
@@ -127,9 +128,9 @@ The following application profiles are provided in this release:
   container as it has a user-friendly set of command line tools installed
   with documentation.
 
-* ``minimal``: This profile provides the minimal software needed to boot and run
-  a system along with the SSH server. It is a good starting point for developing
-  new application profiles.
+* ``minimal``: This profile provides the minimal software needed to boot and
+  run a system along with the SSH server. It is a good starting point for
+  developing new application profiles.
 
 * ``host``: This profile includes runc and other tools needed to setup Linux
   containers. It provides a host environment for images built using the guest
@@ -153,8 +154,8 @@ which is to be deployed in Oryx Linux.
 
 The key variables in an application profile are as follows:
 
-* ``ORYX_APPLICATION_PROFILE_PACKAGES``: This is the list of additional packages
-  to install into the rootfs for this application profile.
+* ``ORYX_APPLICATION_PROFILE_PACKAGES``: This is the list of additional
+  packages to install into the rootfs for this application profile.
 
 When the ``guest`` system profile is selected, the following additional
 variables are used to configure the guest container:
@@ -167,10 +168,10 @@ variables are used to configure the guest container:
   ``capabilities(8)`` manual page.
 
 * ``ORYX_APPLICATION_COMMAND``: This is the main application command to execute
-  when the guest container is started. The command line is tokenised into
+  when the guest container is started. The command line is tokenized into
   separate arguments however no further parsing is performed (so for example
   environment variables cannot be used). The best practice is to create a start
-  script which performs any necessary initialisation and then starts the main
+  script which performs any necessary initialization and then starts the main
   service or application. For an example of a start script see the
   ``start-sshd`` script and recipe in the ``meta-oryx`` layer.
 
@@ -182,7 +183,7 @@ time so that these do not need to be created by manually invoking oryxcmd at
 runtime. This is done by writing recipes which install preconfiguration files
 into ``/usr/share/oryx/preconfig.d`` where the oryxcmd will process them on
 first boot. These files are parsed in alphanumeric sort order so it's
-recommended to use a 2 digit prefix on all file names to enfore the desired
+recommended to use a 2 digit prefix on all file names to enforce the desired
 processing order. Once parsed, the options creating sources are handled first
 followed by the options creating guests.
 
@@ -214,8 +215,8 @@ The following options are required to preconfigure a guest:
 
 The following options may also be set as desired:
 
-* ``enable``: If this option is true then the guest in enabled after creation so
-  that it starts automatically on boot. This is equivalent to running
+* ``enable``: If this option is true then the guest in enabled after creation
+  so that it starts automatically on boot. This is equivalent to running
   ``oryxcmd enable_guest`` after the guest is created.
 
 Preconfiguration Example
@@ -244,10 +245,10 @@ Using the Local Feed
 
 The recipe ``oryx-local-feed`` builds on the preconfiguration support to define
 a local feed with images stored in ``/usr/share/oryx/local-feed``. This allows
-guests to be created on the first boot of a device without requiring any network
-access to a remote source. The preconfiguration file to define the ``local``
-source is installed as part of this recipe and so it is not necessary to
-implement this yourself.
+guests to be created on the first boot of a device without requiring any
+network access to a remote source. The preconfiguration file to define the
+``local`` source is installed as part of this recipe and so it is not
+necessary to implement this yourself.
 
 All images which will be placed in the local feed must have already been built
 before the final native image is built.
@@ -284,14 +285,14 @@ such as the distro name, version and home URL as well as Oryx-specific
 information such as the selected system profile, application profile and
 machine.
 
-To simplify deployment of Oryx images and prevent artifacts being overwritten by
-subsequent builds for different machine, system profile or application profile
-settings, the output files are collected into an images directory (usually
-placed in ``build/images``). Within this images directory, a hierarchy of
-subdirectories is created for each machine, system profile and application
-profile. As only those files required by the boot or installation method used
-with a given system profile are copied into the new directory, there is no
-clutter or confusion.
+To simplify deployment of Oryx images and prevent artifacts being overwritten
+by subsequent builds for different machine, system profile or application
+profile settings, the output files are collected into an images directory
+(usually placed in ``build/images``). Within this images directory, a
+hierarchy of subdirectories is created for each machine, system profile and
+application profile. As only those files required by the boot or installation
+method used with a given system profile are copied into the new directory,
+there is no clutter or confusion.
 
 In normal usage, the top-level bitbake recipe used to build an Oryx image will
 therefore be ``oryx-image``.
@@ -308,9 +309,9 @@ Using Integrated Sources
 
 The recommended way to build Oryx Linux images is to use the integrated source
 tree which combines the ``meta-oryx`` layer and a pre-configured build
-environment with the OpenEmbedded build system. This is the method which is used
-for Oryx Linux releases and is regularly tested as part of the Continuous
-Integration (CI) system.
+environment with the OpenEmbedded build system. This is the method which is
+used for Oryx Linux releases and is regularly tested as part of the
+Continuous Integration (CI) system.
 
 The full contents of the integrated Oryx Linux sources is as follows:
 
@@ -319,7 +320,7 @@ The full contents of the integrated Oryx Linux sources is as follows:
 * The corresponding version of ``bitbake``.
 
 * Additional supporting layers: ``meta-openembedded`` and
-  ``meta-virtualisation``.
+  ``meta-virtualization``.
 
 * Additional BSP layers: ``meta-raspberrypi``.
 
@@ -341,9 +342,9 @@ Using a Source Release
 ++++++++++++++++++++++
 
 Each point release of Oryx Linux includes a source tarball alongside the
-compiled images. This integrated source release contains all OpenEmbedded layers
-needed to build Oryx Linux images and is essentially a point-in-time snapshot of
-the sources which may be obtained from git.
+compiled images. This integrated source release contains all OpenEmbedded
+layers needed to build Oryx Linux images and is essentially a point-in-time
+snapshot of the sources which may be obtained from git.
 
 For the v0.5.0 release, this source release may be obtained from
 https://downloads.toganlabs.com/oryx/distro/0.5.0/oryx-0.5.0.tar.xz.
@@ -397,7 +398,7 @@ arguments::
     ./scripts/build.py
 
 Additional arguments may be passed to the build script to change the selected
-machine (``-M`` or ``--machine`` argument), system profile (``-S`` or 
+machine (``-M`` or ``--machine`` argument), system profile (``-S`` or
 ``--system-profile`` argument) and application profile (``-A`` or
 ``--application-profile`` argument). For example, to build an image for the
 Raspberry Pi 3 device using the ``guest`` system profile and the ``minimal``
@@ -453,12 +454,62 @@ machines::
     ./scripts/build.py -M qemuarm -M qemuarm64 -T guest:minimal \
         -T guest:full-cmdline
 
-As a futher example, the following command can be used to build the host and
+As a further example, the following command can be used to build the host and
 host-test native images, along with the minimal guest image required by the
 host-test application profile, for all supported machines::
 
     ./scripts/build.py --all-machines -T guest:minimal -T native:host \
         -T native:host-test
+
+Building Documentation
+++++++++++++++++++++++
+
+The sources for this documentation are included in the Oryx repository under
+the ``docs`` directory. The `Sphinx documentation generator
+<http://www.sphinx-doc.org/en/master/>`_ is used to build HTML and PDF output
+from the reStructuredText and Markdown source files.
+
+Sphinx requires Python version 3.5 or later along with the ``pip`` tool. To
+install Sphinx and the required modules for building the Oryx documentation
+the ``requirements.txt`` file included with the documentation sources may be
+used as follows::
+
+    pip install -r docs/requirements.txt
+
+The following command may then be used to build the documentation::
+
+    ./scripts/build.py --docs --no-bitbake
+
+The resulting HTML and PDF artifacts are placed in the ``docs`` directory
+within the output directory.
+
+Starting a Development Shell
+++++++++++++++++++++++++++++
+
+During development it may be desirable to use bitbake directly, for example to
+build a particular recipe rather than a whole image. This can be achieved by
+starting a development shell using the build script with the ``--shell``
+argument. The ``-M``, ``-S``, ``-A`` and ``-T`` arguments can be used to
+select the machine, system profile and application profile that will be used
+for the build. However, note that it is not possible to invoke a development
+shell for more than one machine or more than one system profile and
+application profile pair at a time. In this mode of operation the build
+script will setup the required environment variables for an Oryx build and
+then start the bash shell.
+
+For example, to start a development shell with the ``raspberrypi3`` machine,
+``native`` system profile and ``host-test`` application profile selected::
+
+    ./scripts/build.py -M raspberrypi3 -S native -A host-test --shell
+
+Please note that the user and system bashrc files will be parsed by the new
+shell instance and this may interfere with the required environment variables
+set by the build script. If problems are observed when using the development
+shell but not when bitbake is directly invoked by the build script then the
+appropriate bashrc files should be examined.
+
+When the development shell is no longer needed, remember to end the session by
+using ``exit``.
 
 Argument Reference
 ++++++++++++++++++
@@ -475,11 +526,11 @@ The build script understands the following arguments:
 
 * ``-A APPLICATION_PROFILE``, ``--application-profile APPLICATION_PROFILE``:
   Sets the application profile to be built. See the :ref:`application_profiles`
-  section for details on application profiles, as well as the options available.
-  The default value is ``host``.
+  section for details on application profiles, as well as the options
+  available. The default value is ``host``.
 
 * ``-M MACHINE``, ``--machine MACHINE``: Sets the target machine for which the
-  image will be built. Supported machines are: ``qemux86``, ``qemux86-64``, 
+  image will be built. Supported machines are: ``qemux86``, ``qemux86-64``,
   ``qemuarm``, ``qemuarm64, ``raspberrypi3`` and ``raspberrypi3-64``. The
   default value is "qemux86". This argument may be specified more than once
   to build multiple images in one invocation of the build script.
@@ -489,27 +540,29 @@ The build script understands the following arguments:
   and application profile to be built. This is an alternative to specifying the
   ``-S`` and ``-A`` arguments separately. This argument may be specified more
   than once to build multiple images in one invocation of the build script
-  (which is not possible when using the ``-S`` and ``-A`` arguments). The images
-  are built in the order that they are given on the command line and for each
-  specified machine.
+  (which is not possible when using the ``-S`` and ``-A`` arguments). The
+  images are built in the order that they are given on the command line and
+  for each specified machine.
 
 * ``-k``, ``--continue``: Continue as far as possible after an error. This is
   equivalent to the ``-k`` argument to bitbake.
 
-* ``--oryx-base ORYX_BASE``: Set the base directory of the Oryx source tree. The
-  default value is the current directory so this argument is only useful in
-  special cases.
+* ``--oryx-base ORYX_BASE``: Set the base directory of the Oryx source tree.
+  The default value is the current directory so this argument is only useful
+  in special cases.
 
 * ``--shell``: Start a development shell instead of running bitbake directly.
   This allows more control over the invocation of bitbake and is typically
   useful in development and in debugging failed builds.
 
-* ``-o OUTPUT_DIR``, ``--output-dir OUTPUT_DIR``: Set the output directory where
-  build artifacts will be placed. The default value is ``build/images``.
+* ``-o OUTPUT_DIR``, ``--output-dir OUTPUT_DIR``: Set the output directory
+  where build artifacts will be placed. The default value is
+  ``build/images``.
 
-* ``--all-machines``: Build images for all supported target machines. This is an
-  alternative to manually specifying the full list with multiple ``-M``
-  arguments. See the release notes for the current list of supported machines.
+* ``--all-machines``: Build images for all supported target machines. This is
+  an alternative to manually specifying the full list with multiple ``-M``
+  arguments. See the release notes for the current list of supported
+  machines.
 
 * ``--rm-work``: Remove temporary files after building each recipe to save disk
   space. This enables the ``rm_work`` bbclass.
@@ -542,28 +595,18 @@ The build script understands the following arguments:
     -T guest:minimal -T guest:full-cmdline -T native:host -T native:host-test \
     --all-machines --docs --mirror-archive --source-archive --checksum
 
-Using Bitbake Directly
-----------------------
-
-During development it may be desirable to use bitbake directly, for example to
-build a particular recipe rather than a whole image. The build script can be
-used to start a development shell (using the ``--shell`` argument documented
-above) with the environment variables set appropriately for building for any
-MACHINE, SYSTEM_PROFILE and APPLICATION_PROFILE combination. For example::
-
-    ./scripts/build.py -M raspberrypi3 -S native -A host --shell
-
-Once in the development shell, bitbake can be executed as normal. Remember to
-exit the development shell once you have finished using bitbake directly.
+* ``--no-bitbake``: Disable bitbake invocation so that no images are built.
+  This argument is useful if you only want to build the documentation, create
+  a source archive or similar.
 
 Using meta-oryx as a Standalone Layer
 =====================================
 
-Although the above method of `Using Integrated Sources`_ is preferred as this is
-the tested and supported method, it's also possible to use the ``meta-oryx``
-layer as a traditional OpenEmbedded layer. This layer may be obtained from the
-git repository at https://gitlab.com/oryx/meta-oryx and added into an
-OpenEmbedded build environment as normal.
+Although the above method of `Using Integrated Sources`_ is preferred as this
+is the tested and supported method, it's also possible to use the
+``meta-oryx`` layer as a traditional OpenEmbedded layer. This layer may be
+obtained from the git repository at https://gitlab.com/oryx/meta-oryx and
+added into an OpenEmbedded build environment as normal.
 
 Once the ``meta-oryx`` layer has been added to the OpenEmbedded build
 environment, the following variables should be set in ``conf/local.conf`` or

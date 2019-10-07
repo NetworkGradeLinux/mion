@@ -398,7 +398,7 @@ def main():
             for machine in args.machine_list:
                 for target in args.target_list:
                     retval = do_build(args, machine, target.system_profile, target.application_profile)
-                exitcode |= retval
+                    exitcode |= retval
 
         if args.docs:
             retval = do_docs(args)
