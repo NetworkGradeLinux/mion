@@ -76,25 +76,23 @@ documentation.
 Raspberry Pi 3
 --------------
 
-Download the appropriate SD card image for the desired Raspberry Pi model from
-the v0.5.0 release:
+Download the appropriate SD card image and BMAP file for the Raspberry Pi 3
+from the v0.5.0 release:
 
-* `SD card image [raspberrypi3]
-  <https://downloads.toganlabs.com/oryx/distro/0.5.0/raspberrypi3/native/host/oryx-native-host-raspberrypi3.wic.xz>`_
+* 32-bit:
+  `SD card image <https://downloads.toganlabs.com/oryx/distro/0.5.0/raspberrypi3/native/host/oryx-native-host-raspberrypi3.wic.xz>`__,
+  `BMAP file <https://downloads.toganlabs.com/oryx/distro/0.5.0/raspberrypi3/native/host/oryx-native-host-raspberrypi3.wic.bmap>`__
 
-* `SD card image [raspberrypi3-64]
-  <https://downloads.toganlabs.com/oryx/distro/0.5.0/raspberrypi3-64/native/host/oryx-native-host-raspberrypi3-64.wic.xz>`_
+* 64-bit:
+  `SD card image <https://downloads.toganlabs.com/oryx/distro/0.5.0/raspberrypi3-64/native/host/oryx-native-host-raspberrypi3-64.wic.xz>`__,
+  `BMAP file <https://downloads.toganlabs.com/oryx/distro/0.5.0/raspberrypi3-64/native/host/oryx-native-host-raspberrypi3-64.wic.bmap>`__
 
-Once the appropriate SD card image has been downloaded, it must first be
-decompressed::
+Once the appropriate SD card image has been downloaded, it may be written to
+an SD card using bmaptool (in this example the target SD card appears in the
+system as ``/dev/sdb`` but this should be replaced by the correct path for
+the system in use)::
 
-    unxz oryx-native-host-raspberrypi.rpi-sdimg.xz
-
-The uncompressed SD card image should then be written to an appropriate SD card
-(in this example the target SD card appears in the system as ``/dev/sdb`` but
-this should be replaced by the correct path for the system in use)::
-
-    dd if=oryx-native-host-raspberrypi.rpi-sdimg of=/dev/sdb bs=1M
+    bmaptool copy oryx-native-host-raspberrypi3.wic.xz /dev/sdb
 
 The SD card may then be removed and placed into the Raspberry Pi device itself.
 
