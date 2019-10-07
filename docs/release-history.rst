@@ -68,7 +68,13 @@ Changes since v0.4.0:
   root file system of a native image. This allows offline creation of guests on
   the target device.
 
-* Enabled security flags when building Oryx images to improve our security.
+* Enabled security flags when building Oryx images.
+
+* Greatly improved the documentation and published to
+  https://oryx.readthedocs.io.
+
+* Added optional Mender.io Over-the-Air (OTA) update integration to support
+  reliable and remotely managed upgrade of native and guest software images.
 
 The following platforms are supported in this release:
 
