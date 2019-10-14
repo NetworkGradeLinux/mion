@@ -9,8 +9,160 @@ It is responsible for the management of guest containers and the sources from
 which container images may be obtained. As a command-line application it has
 both an interactive mode and a non-interactive mode.
 
-Interactive Mode
+Managing Sources
 ================
+
+To create a guest within Oryx we first need to configure one or more sources.
+These sources represent collections of images compatible with the target
+device. Each source is identified by a name and has a single configuration
+value - the URL where the collection of images is published. This URL may use
+the file protocol when the images are stored directly on the target device or
+on removable media which can be accessed locallay. Alternatively the URL will
+use the HTTP or HTTPS protocols where images are retrieved over the network.
+
+To define a new source we use ``oryxcmd add_source``, giving the name we will
+use to identify the source and the URL from which images will be obtained. For
+example, to add the collection of images for the raspberrypi3 provided with
+the v0.5.0 release::
+
+    $ oryxcmd add_source oryx https://downloads.toganlabs.com/oryx/distro/0.5.0/raspberrypi3
+    Added source "oryx" with URL "http://downloads.toganlabs.com/oryx/distro/0.5.0/raspberrypi3"
+
+This new source may be inspected by using ``oryxcmd show_source``, giving the
+name of the source to inspect. Currently this will just show the URL
+configured for the source. For example, to show the configuration for the
+'oryx' source we created above::
+
+    $ oryxcmd show_source oryx
+    {
+        "url": "http://downloads.toganlabs.com/oryx/distro/0.5.0/raspberrypi3"
+    }
+
+The full list of sources currently configured can be shown by using ``oryxcmd
+list_sources``. For example::
+
+    $ oryxcmd list_sources
+    oryx
+
+A source that is no longer needed can be removed by using ``oryxcmd
+remove_source``, giving the name of the source to remove. For example, to
+remove the 'oryx' source we created above::
+
+    $ oryxcmd remove_source oryx
+    Removed source "oryx"
+
+Managing Guests
+===============
+
+A guest is created from an image provided by a source which has already been
+defined on the target device.
+
+To create a new guest we use ``oryxcmd add_guest``, giving the name we will use
+to identify the guest and the image from which it will be created. The image is
+identified by the appropriate source name and the image name, separated by a
+colon. During guest creation, the selected image will be downloaded (if
+needed), extracted and a configuration file for the runc container runtime
+will be created. For example, to create a new guest from the 'minimal' image
+provided by the 'oryx' source we created in the previous section::
+
+    $ oryxcmd add_guest test oryx:minimal
+    Added guest "test" from image "oryx:minimal"
+
+The new guest may be inspected by using ``oryxcmd show_guest``, giving the name
+of the guest to inspect. This will show the source name and image name used to
+create the guest as well as the autostart status for the guest. For example, to
+show the configuration for the 'test' guest we created above::
+
+    $ oryxcmd show_guest test
+    {
+        "autostart_enabled": 0,
+        "image": {
+            "APPLICATION_PROFILE": "minimal",
+            "CAPABILITIES": [
+                "CAP_AUDIT_WRITE",
+                "CAP_KILL",
+                "CAP_NET_BIND_SERVICE",
+                "CAP_SYS_CHROOT",
+                "CAP_SETGID",
+                "CAP_SETUID"
+            ],
+            "COMMAND": "/sbin/start-sshd",
+            "DISTRO": "oryx",
+            "MACHINE": "raspberrypi3",
+            "ROOTFS": "oryx-guest-minimal-raspberrypi3.tar.xz",
+            "SYSTEM_PROFILE": "guest",
+            "SYSTEM_PROFILE_TYPE": "guest",
+            "VERSION": "0.5.0"
+        },
+        "image_name": "minimal",
+        "path": "/var/lib/oryx-guests/test",
+        "source": {
+            "url": "http://downloads.toganlabs.com/oryx/distro/0.5.0/raspberrypi3"
+        },
+        "source_name": "oryx"
+    }
+
+The full list of guests currently configured can be shown by using ``oryxcmd
+list_guests``. For example::
+
+    $ oryxcmd list_guests
+    test
+
+A guest may be started by using ``oryxcmd start_guest``, giving the name of
+the guest to start. This works much the same way as starting a systemd service,
+starting the guest in the background. A runc container will be created for
+the guest and the main command (which was defined when the corresponding
+image was built) will be executed. The guest will be automatically allocated
+an IP address in the 172.19.0.0/24 network by using netns. For example, to
+start the 'test' guest we created above::
+
+    $ oryxcmd start_guest test
+    Started guest "test"
+
+A running guest may be stopped by using ``oryxcmd stop_guest``, giving the
+name of the guest to stop. This works much the same way as stopping a systemd
+service. The SIGTERM signal will be sent to the appropriate runc container,
+followed by the SIGKILL signal to shut it down. For example, to stop the
+'test' guest we created above::
+
+    $ oryxcmd stop_guest test
+    Stopped guest "test"
+
+A guest may be configured to start automatically ('autostart') when the
+device is booted by using ``oryxcmd enable_guest``, giving the name of the
+guest for which to enable autostart. This works much the same way as enabling
+a systemd service. The autostart status for a guest can be seen in the
+``autostart_enabled`` value when inspecting the guest configuration. For
+example, to enable autostart for the 'test' guest we created above::
+
+    $ oryxcmd enable_guest test
+    Enabled guest "test"
+
+A guest may be configured not to start automatically when the device is
+booted by using ``oryxcmd disable_guest``, giving the name of the guest for
+which to disable autostart. This works much the same ways as disabling a
+systemd service. For example, to disable autostart for the 'test' guest we
+created above::
+
+    $ oryxcmd disable_guest test
+    Disabled guest "test"
+
+A guest that is no longer required can be removed by using ``oryxcmd
+remove_guest``, giving the name of the guest to remove. For example, to remove
+the 'test' guest we created above::
+
+    $ oryxcmd remove_guest test
+    Removed guest "test"
+
+oryxcmd Usage Modes
+===================
+
+``oryxcmd`` may be used in either interactive mode or non-interactive mode as
+described below. The usage descriptions in the previous section showed the
+non-interactive mode for convenience.
+
+Interactive Mode
+----------------
 
 In the interactive mode, ``oryxcmd`` is started without specifying a command::
 
@@ -18,8 +170,8 @@ In the interactive mode, ``oryxcmd`` is started without specifying a command::
     Welcome to oryxcmd (oryx-apps v0.3.0)
     oryxcmd>
 
-At the ``oryxcmd`` prompt, any of the supported `Commands`_ may be executed.
-For example::
+At the ``oryxcmd`` prompt, any of the supported commands may be executed. For
+example::
 
     oryxcmd> list_sources
     oryx
@@ -29,7 +181,7 @@ To leave interactive mode, use the ``exit`` command::
     oryxcmd> exit
 
 Non-interactive Mode
-====================
+--------------------
 
 In the non-interactive mode, ``oryxcmd`` is executed with a command specified
 as an argument. The specified command will be executed and then ``oryxcmd``
@@ -38,10 +190,10 @@ will exit. For example::
     $ oryxcmd list_sources
     oryx
 
-Any of the supported `Commands`_ may be executed in this way.
+Any of the supported commands may be executed in this way.
 
-Command Line Arguments
-======================
+Common oryxcmd Arguments
+========================
 
 The following command line arguments are supported by ``oryxcmd``:
 
@@ -52,8 +204,8 @@ The following command line arguments are supported by ``oryxcmd``:
 
 * ``-V``, ``--version``: Print version string and exit.
 
-Commands
-========
+Command Reference
+=================
 
 .. _oryxcmd_add_source:
 
