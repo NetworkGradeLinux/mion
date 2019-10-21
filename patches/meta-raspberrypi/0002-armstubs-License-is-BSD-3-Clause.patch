@@ -1,0 +1,28 @@
+From 638baa058ae78ec46fe25a7a4a6a4315121e94b0 Mon Sep 17 00:00:00 2001
+From: Paul Barker <paul@betafive.co.uk>
+Date: Mon, 21 Oct 2019 10:37:22 +0100
+Subject: [PATCH 2/4] armstubs: License is BSD-3-Clause
+
+All source files in the armstubs directory have a 3-clause BSD license.
+The Makefile doesn't appear to use any files from outside this directory
+during the build.
+
+Signed-off-by: Paul Barker <paul@betafive.co.uk>
+---
+ recipes-bsp/armstubs/armstubs.bb | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/recipes-bsp/armstubs/armstubs.bb b/recipes-bsp/armstubs/armstubs.bb
+index 66f2833..4318d9b 100644
+--- a/recipes-bsp/armstubs/armstubs.bb
++++ b/recipes-bsp/armstubs/armstubs.bb
+@@ -1,5 +1,5 @@
+ DESCRIPTION = "Boot strap code that the GPU puts on memory to start running the boot loader"
+-LICENSE = "Proprietary"
++LICENSE = "BSD-3-Clause"
+ 
+ LIC_FILES_CHKSUM = "file://armstub.S;beginline=1;endline=26;md5=9888f34ac06a676129416c952a6a521e"
+ 
+-- 
+2.23.0
+
