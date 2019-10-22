@@ -529,12 +529,6 @@ The build script understands the following arguments:
   section for details on application profiles, as well as the options
   available. The default value is ``host``.
 
-* ``-M MACHINE``, ``--machine MACHINE``: Sets the target machine for which the
-  image will be built. Supported machines are: ``qemux86``, ``qemux86-64``,
-  ``qemuarm``, ``qemuarm64, ``raspberrypi3`` and ``raspberrypi3-64``. The
-  default value is "qemux86". This argument may be specified more than once
-  to build multiple images in one invocation of the build script.
-
 * ``-T SYSTEM_PROFILE:APPLICATION_PROFILE``,
   ``--target-pair SYSTEM_PROFILE:APPLICATION_PROFILE``: Sets the system profile
   and application profile to be built. This is an alternative to specifying the
@@ -543,6 +537,12 @@ The build script understands the following arguments:
   (which is not possible when using the ``-S`` and ``-A`` arguments). The
   images are built in the order that they are given on the command line and
   for each specified machine.
+
+* ``-M MACHINE``, ``--machine MACHINE``: Sets the target machine for which the
+  image will be built. Supported machines are: ``qemux86``, ``qemux86-64``,
+  ``qemuarm``, ``qemuarm64, ``raspberrypi3`` and ``raspberrypi3-64``. The
+  default value is "qemux86". This argument may be specified more than once
+  to build multiple images in one invocation of the build script.
 
 * ``-k``, ``--continue``: Continue as far as possible after an error. This is
   equivalent to the ``-k`` argument to bitbake.
@@ -571,6 +571,11 @@ The build script understands the following arguments:
   components included in the image. This is placed in the ``mirror`` directory
   within the output directory. It can be published and used as a mirror or a
   premirror for subsequent builds.
+
+* ``--enable-mender``: Enable the inclusion of Mender layers in BBLAYERS. These
+  layers are required to build Mender images but prevent the building of
+  non-Mender images. This option is typically used along with a system profile
+  which is configured for Mender integration.
 
 * ``--dl-dir DL_DIR``: Set the path for the downloads directory. The default
   value is ``build/downloads``.
