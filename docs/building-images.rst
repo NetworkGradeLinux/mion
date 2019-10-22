@@ -33,10 +33,19 @@ The following system profiles are provided in this release:
   save space. When possible, u-boot is enabled to provide greater boot-time
   flexibility.
 
+* ``native-mender``: This profile extends the ``native`` system profile to add
+  integration with the Mender.io OTA update system. See the section on
+  :ref:`mender_integration` for details on how to use this system profile.
+
 * ``guest``: This profile indicates that the image will run as a container
   guest under runc. No bootloader or kernel is compiled for this profile.
   Build artifacts are always compressed tar archives of a rootfs, ready for
   installation onto a host system.
+
+* ``guest-mender-update-module``: This profile extends the ``guest`` system
+  profile to add integration with the Mender.io Update Modules feature. See
+  the section on :ref:`mender_integration` for details on how to use this
+  system profile.
 
 The system profile is determined by the ``ORYX_SYSTEM_PROFILE`` variable.
 
@@ -139,6 +148,11 @@ The following application profiles are provided in this release:
 * ``host-test``: This profile includes everything in the ``host`` application
   profile plus additional testing and debug tools. It is primarily used in the
   development of Oryx itself.
+
+* ``host-mender-update-modules``: This profiles includes everything in the
+  ``host`` application profile plus additional support for updating guests
+  using Mender Update Modules. See the section on :ref:`mender_integration`
+  for details on how to use this application profile.
 
 It's expected that Oryx will be enhanced by the addition of many more
 application profiles in future releases.
