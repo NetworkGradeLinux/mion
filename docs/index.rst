@@ -23,4 +23,5 @@ The latest version of the documentation is available online at the
    getting-started
    using-oryxcmd
    building-images
+   mender-integration
    contributing
