@@ -13,7 +13,6 @@ REPOLIST=" \
     bitbake \
     openembedded-core \
     meta-openembedded \
-    meta-raspberrypi \
     meta-virtualization \
     meta-mender \
     "
