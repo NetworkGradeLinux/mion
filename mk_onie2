@@ -1,0 +1,76 @@
+#!/bin/bash
+
+set -e
+
+[ -f /usr/bin/mk_onie2.cfg ] && . /usr/bin/mk_onie2.cfg
+
+[ -z "${BUILDDIR}" ] && echo "BUILDDIR not set (forgot to source yocto env?)" && exit 1
+[ -z "${ONIE_DIR}" ] && ONIE_DIR="${BUILDDIR}/../bisdn-onie-additions"
+[ -z "${IMAGETYPE}" ] && echo "IMAGETYPE not set" && exit 1
+[ -z "${DEPLOY_DIR}" ] && DEPLOY_DIR="$(pwd)"
+[ -z "${IMAGE_SUFFIX}" ] && IMAGE_SUFFIX=$(LC_TIME=en_US.utf8 date +"%Y%m%d%H%M")
+
+CONFIGFILE=$(mktemp)
+pushd ${BUILDDIR}
+
+bitbake -e > ${CONFIGFILE}
+
+eval export $(grep ^DEPLOY_DIR_IMAGE= ${CONFIGFILE})
+eval $(grep ^MACHINEOVERRIDES= ${CONFIGFILE})
+# MACHINE_ARCH can be simplified if we use krogoth
+# TODO rename MACHINE_ARCH to MACHINE_NAME
+eval export MACHINE_ARCH=$(echo $MACHINEOVERRIDES | sed -e 's/.*://')
+eval export $(grep ^PLATFORM_VENDOR= ${CONFIGFILE})
+eval export $(grep ^BISDN_ARCH= ${CONFIGFILE})
+eval export $(grep ^BISDN_ONIE_MACHINE= ${CONFIGFILE})
+eval export $(grep ^BISDN_ONIE_PLATFORM= ${CONFIGFILE})
+eval export $(grep ^CONSOLE_SPEED= ${CONFIGFILE})
+eval export $(grep ^CONSOLE_DEV= ${CONFIGFILE})
+eval export $(grep ^CONSOLE_PORT= ${CONFIGFILE})
+eval export $(grep ^KERNEL_IMAGETYPE= ${CONFIGFILE})
+
+#eval export $(grep ^GRUB_CMDLINE_LINUX= ${CONFIGFILE})
+#eval export $(grep ^GRUB_SERIAL_COMMAND= ${CONFIGFILE})
+#eval export $(grep ^EXTRA_CMDLINE_LINUX= ${CONFIGFILE})
+popd
+
+if [ -z "$BISDN_ARCH" ]; then
+	case "$BISDN_ONIE_PLATFORM" in
+	x86_64*)
+		export BISDN_ARCH="x86_64"
+		;;
+	*)
+		echo "Error: unknown BISDN_ARCH for \"$BISDN_ONIE_PLATFORM\"" >&2
+		exit 1
+		;;
+	esac
+fi
+
+VARLIST="DEPLOY_DIR_IMAGE MACHINEOVERRIDES MACHINE_ARCH PLATFORM_VENDOR BISDN_ONIE_MACHINE BISDN_ONIE_PLATFORM DEPLOY_DIR KERNEL_IMAGETYPE"
+
+[ "$BISDN_ARCH" = "x86_64" ] && VARLIST+=" CONSOLE_SPEED CONSOLE_DEV CONSOLE_PORT"
+
+for var in ${VARLIST}; do
+  [ -z "$(eval echo \$${var})" ] && echo "$var not set" && exit 1
+done
+
+echo "building ONIE image for $MACHINE_ARCH"
+TMPDIR=$(mktemp -d)
+
+cp -v $DEPLOY_DIR_IMAGE/$KERNEL_IMAGETYPE ${TMPDIR}
+[ -f $DEPLOY_DIR_IMAGE/${IMAGETYPE}-$MACHINE_ARCH.tar.xz ] && cp -v $DEPLOY_DIR_IMAGE/${IMAGETYPE}-$MACHINE_ARCH.tar.xz ${TMPDIR}/rootfs.tar.xz
+
+files=""
+for f in $(ls $TMPDIR)
+do
+	files="${files} ${TMPDIR}/$f"
+done
+
+echo $files
+
+pushd "$ONIE_DIR"
+  ./mk_bisdn_yocto_image.sh $MACHINE_ARCH $files
+  mv -v onie-bisdn-${MACHINE_ARCH}.bin ${DEPLOY_DIR}/onie-bisdn-${IMAGETYPE}-${MACHINE_ARCH}-${IMAGE_SUFFIX}.bin
+popd
+
+rm -rf $TMPDIR
