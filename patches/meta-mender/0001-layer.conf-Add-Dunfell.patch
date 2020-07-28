@@ -1,0 +1,30 @@
+From 88b9d2eae1b87c284982aeabc34d6f63d8113ed2 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Eil=C3=ADs=20N=C3=AD=20Fhlannag=C3=A1in?=
+ <pidge@toganlabs.com>
+Date: Tue, 28 Jul 2020 15:59:06 +0000
+Subject: [PATCH] layer.conf: Add Dunfell
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This adds Dunfell to layer compatability
+
+Signed-off-by: Eilís Ní Fhlannagáin <pidge@toganlabs.com>
+---
+ meta-mender-core/conf/layer.conf | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/meta-mender-core/conf/layer.conf b/meta-mender-core/conf/layer.conf
+index eb3728d..df86d70 100644
+--- a/meta-mender-core/conf/layer.conf
++++ b/meta-mender-core/conf/layer.conf
+@@ -17,5 +17,5 @@ BBFILE_PRIORITY_mender = "6"
+ 
+ INHERIT += "mender-setup"
+ 
+-LAYERSERIES_COMPAT_mender = "warrior"
++LAYERSERIES_COMPAT_mender = "warrior | dunfell"
+ LAYERDEPENDS_mender = "core"
+-- 
+2.17.1
+
