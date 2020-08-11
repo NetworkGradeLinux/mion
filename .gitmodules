@@ -21,13 +21,6 @@
 	path = meta-mender
 	url = https://github.com/mendersoftware/meta-mender.git
 	branch = master
-
-[submodule "meta-mion"]
-	path = meta-mion
-	url = git@github.com:APS-Networks/meta-mion.git
-[submodule "meta-mion-stordis"]
-	path = meta-mion-stordis
-	url = git@github.com:APS-Networks/meta-mion-stordis.git
 [submodule "meta-yocto"]
 	path = meta-yocto
 	url = git://git.yoctoproject.org/meta-yocto
