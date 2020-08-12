@@ -3,15 +3,15 @@
 	url = https://gitlab.com/oryx/meta-oryx.git
 [submodule "bitbake"]
 	path = bitbake
-	url = https://github.com/openembedded/bitbake.git
+	url = git://git.openembedded.org/bitbake
 	branch = 1.46
 [submodule "openembedded-core"]
 	path = openembedded-core
-	url = https://github.com/openembedded/openembedded-core.git
+	url = git://git.openembedded.org/openembedded-core
 	branch = dunfell
 [submodule "meta-openembedded"]
 	path = meta-openembedded
-	url = https://github.com/openembedded/meta-openembedded.git
+	url = git://git.openembedded.org/meta-openembedded
 	branch = dunfell
 [submodule "meta-virtualization"]
 	path = meta-virtualization
