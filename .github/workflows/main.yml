@@ -35,5 +35,5 @@ jobs:
         path: meta-mion-stordis
       
     # Runs a single command using the runners shell
-    - name: Run a one-line script
-      run: echo Hello, world!
+    - name: Build script
+      run: ./ci-build.sh
