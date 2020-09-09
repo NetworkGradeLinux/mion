@@ -3,8 +3,5 @@
 /build/conf/*
 !/build/conf/bblayers.conf
 !/build/conf/local.conf
-/ci/report.xml
-/docs/_build
-/.vscode
-__pycache__
+!/build/conf/multiconfig
 *.log
