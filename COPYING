@@ -1,7 +1,9 @@
-Copyright (C) 2016-2019, Togán Labs
+Copyright (C) 2016-2020, Togán Labs
 
 All content outside of the `docs` directory is distributed under the MIT License,
 see `licenses/MIT` for full text.
+
+Patches to upstream code are distributed under the License of the upstream project.
 
 All documentation source text in the `docs` directory is distributed under the
 Creative Commons Attribution 4.0 International License, see `licenses/CC-BY-4.0`

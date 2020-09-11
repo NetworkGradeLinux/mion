@@ -23,4 +23,5 @@
 	url = git://git.yoctoproject.org/meta-yocto
 [submodule "meta-python2"]
 	path = meta-python2
-	url = ./meta-python2
+	url = https://git.openembedded.org/meta-python2
+	branch = dunfell
