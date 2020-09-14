@@ -17,10 +17,11 @@
 [submodule "meta-mender"]
 	path = meta-mender
 	url = https://github.com/mendersoftware/meta-mender.git
-	branch = master
+	branch = dunfell
 [submodule "meta-yocto"]
 	path = meta-yocto
 	url = git://git.yoctoproject.org/meta-yocto
+	branch = dunfell
 [submodule "meta-python2"]
 	path = meta-python2
 	url = https://git.openembedded.org/meta-python2
