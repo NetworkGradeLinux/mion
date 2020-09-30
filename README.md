@@ -20,9 +20,9 @@ and license information.
 ## Quickstart
 Reference information for building mion. 
 
-Getting familiar with the [Yocto Project and OpenEmbedded] (https://www.yoctoproject.org/docs/). 
+Getting familiar with the [Yocto Project and OpenEmbedded](https://www.yoctoproject.org/docs/). 
 
-Want to know more about mion? Our [main documentation] (https://docs.mion.io) has the in-depth information and resources to help get you started.
+Want to know more about mion? Our [main documentation](https://docs.mion.io) has the in-depth information and resources to help get you started.
 
 ### Table of Contents
 [About](#about-mion)
