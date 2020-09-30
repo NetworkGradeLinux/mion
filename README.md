@@ -1,7 +1,10 @@
 *mion: mion infrastructure operating system for networks*
 
 # About mion
-[mion](mion.io) is a Linux distro and image builder designed for operation in high-risk environments such as Critical National Infrastructure. mion is designed to run mainly on programmable network switches, although, due to it being based on the Yocto Project and OpenEmbedded, it is not limited to that use case.
+[mion](mion.io) is a Linux distro and image builder designed for operation in 
+high-risk environments such as Critical National Infrastructure. mion is 
+designed to run mainly on programmable network switches, although, due to it 
+being based on the Yocto Project and OpenEmbedded, it is not limited to that use case.
 
 mion provides both container based solutions or an ONIE compatible installer. By using containers, mion allows for easy updates and installs, as well as the ability to isolate applications requiring access to specialized hardware from those which use ‘normal’ Linux interfaces like the network and filesystems.
 
