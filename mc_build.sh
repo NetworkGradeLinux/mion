@@ -72,7 +72,7 @@ build(){
     [ ! -z "$HOST" ] && CD_LINE="CONTAINER_DEPENDS=$CONTAINER_DEPENDS"
 
     if [ ! -z "$EMIT" ]; then
-        at <<EOF
+        cat <<EOF
     The bitbake command we would have run is:
     BB_ENV_EXTRAWHITE="$BB_ENV_EXTRAWHITE CONTAINER_NAMES CONTAINER_DEPENDS BBMULTICONFIG MION_CONT_DISABLE" BBMULTICONFIG="$BBMULTICONFIG" CONTAINER_NAMES="$CONTAINER_NAMES" $CD_LINE MACHINE="$MACHINE" MION_CONT_DISABLE="$DISABLE" bitbake $BB_MC_CONTAINERS $HOST_MC_LINE
 EOF
@@ -88,4 +88,4 @@ parse_args "$@"
 
 build
 
-echo "mc_buils.sh - Done."
+echo "mc_build.sh - Done."
