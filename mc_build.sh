@@ -1,4 +1,5 @@
 #!/bin/bash
+# SPDX-License-Identifier: MIT
 set -e
 
 error() { echo "ERROR: $1" >&2; exit 1; }
