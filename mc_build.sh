@@ -40,12 +40,12 @@ parse_args(){
 }
 
 build(){
-    local CONTAINER_DEPENDS=""
-    local BB_MC_CONTAINERS=""
+    local MC_CONTAINERS=""
     local BBMULTICONFIG=""
     local CONTAINER_NAMES=""
-    local HOST_MC_LINE=""
-    local CD_LINE=""
+    local CONTAINER_DEPENDS=""
+    local BUILD_ARGS=""
+    declare -a GUESTS
 
     if [ ! -z "$HOST" ]; then
         HOSTCONFIG=$(echo "$HOST" | cut -d':' -f1)
@@ -54,38 +54,39 @@ build(){
 
     IFS=","
     if [ ! -z "$CONTAINERS" ]; then
-        for i in $CONTAINERS; do
-            CONFIG=$(echo "$i" | cut -d':' -f1)
-            IMAGE=$(echo "$i" | cut -d':' -f2)
+        guest_count=0
+        for container in $CONTAINERS; do
+            CONFIG=$(echo "$container" | cut -d':' -f1)
+            IMAGE=$(echo "$container" | cut -d':' -f2)
+
             CONTAINER_NAMES="$CONTAINER_NAMES $IMAGE"
+            MC_CONTAINERS="$CONFIG:$IMAGE $MC_CONTAINERS"
+
+            GUESTS[guest_count]="mc:${CONFIG}:${IMAGE}"
+            guest_count=$((guest_count+1))
 
 	        BBMULTICONFIG="$BBMULTICONFIG $CONFIG"
-            if [ ! -z "BB_MC_CONTAINERS" ]; then
-                BB_MC_CONTAINERS="mc:$CONFIG:$IMAGE"
-            else
-                BB_MC_CONTAINERS="mc:$CONFIG:$IMAGE $BB_MC_CONTAINERS"
-            fi
+
 	        [ ! -z "$HOST" ] && CONTAINER_DEPENDS="$CONTAINER_DEPENDS $IMAGE-pkg"
         done
     fi 
 
-    [ ! -z "$HOST" ] && HOST_MC_LINE="mc:$HOST"
-    [ ! -z "$HOST" ] && CD_LINE="CONTAINER_DEPENDS=$CONTAINER_DEPENDS"
+    BUILD_ARGS="$MC_CONTAINERS $HOST"
 
     if [ ! -z "$EMIT" ]; then
         cat <<EOF
     The bitbake command we would have run is:
-    BB_ENV_EXTRAWHITE="$BB_ENV_EXTRAWHITE CONTAINER_NAMES CONTAINER_DEPENDS BBMULTICONFIG MION_CONT_DISABLE" BBMULTICONFIG="$BBMULTICONFIG" CONTAINER_NAMES="$CONTAINER_NAMES" $CD_LINE MACHINE="$MACHINE" MION_CONT_DISABLE="$DISABLE" bitbake $BB_MC_CONTAINERS $HOST_MC_LINE
+    BB_ENV_EXTRAWHITE="$BB_ENV_EXTRAWHITE BUILD_ARGS CONTAINER_NAMES CONTAINER_DEPENDS BBMULTICONFIG MION_CONT_DISABLE" BUILD_ARGS="$BUILD_ARGS" BBMULTICONFIG="$BBMULTICONFIG" CONTAINER_NAMES="$CONTAINER_NAMES" CONTAINER_DEPENDS="$CONTAINER_DEPENDS" MACHINE="$MACHINE" MION_CONT_DISABLE="$DISABLE" bitbake ${GUESTS[@]} "mc:${HOST}"
 EOF
         exit 0
     fi
 
-	exec env BB_ENV_EXTRAWHITE="$BB_ENV_EXTRAWHITE CONTAINER_NAMES CONTAINER_DEPENDS BBMULTICONFIG MION_CONT_DISABLE" BBMULTICONFIG="$BBMULTICONFIG" CONTAINER_NAMES="$CONTAINER_NAMES" $CD_LINE MACHINE="$MACHINE" MION_CONT_DISABLE="$DISABLE" bitbake $BB_MC_CONTAINERS $HOST_MC_LINE
+    exec env BB_ENV_EXTRAWHITE="$BB_ENV_EXTRAWHITE BUILD_ARGS CONTAINER_NAMES CONTAINER_DEPENDS BBMULTICONFIG MION_CONT_DISABLE" BUILD_ARGS="$BUILD_ARGS" BBMULTICONFIG="$BBMULTICONFIG" CONTAINER_NAMES="$CONTAINER_NAMES" CONTAINER_DEPENDS="$CONTAINER_DEPENDS" MACHINE="$MACHINE" MION_CONT_DISABLE="$DISABLE" bitbake ${GUESTS[@]} "mc:${HOST}"
 }
 
 parse_args "$@"
 
-[ -z "$BBPATH" ] && error "You need to source ./openembedded-core/oe-init-build-env first"
+[ -z "$BBPATH" ] && error "Please source ./openembedded-core/oe-init-build-env first"
 
 build
 
