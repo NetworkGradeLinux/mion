@@ -33,12 +33,12 @@ Want to know more about mion? Our [main documentation](https://docs.mion.io) has
 ## Obtaining mion sources
 
 ```shell
-git clone --recursive git@github.com:APS-Networks/mion.git
+git clone --recursive https://github.com/NetworkGradeLinux/mion.git
 cd mion
 # To obtain related mion layers:
-git clone git@github.com:APS-Networks/meta-mion.git
-# Obtain the relevant hardware layer, i.e. git clone git@github.com:APS-Networks/meta-mion-stordis.git
-git clone git@github.com:APS-Networks/meta-mion-<ONL_VENDOR>.git
+git clone https://github.com/NetworkGradeLinux/meta-mion.git
+# Obtain the relevant hardware layer, i.e. git clone https://github.com/NetworkGradeLinux/meta-mion-stordis.git
+git clone https://github.com/NetworkGradeLinux/meta-mion-<ONL_VENDOR>.git
 # Add Bitbake Layer to bblayers.conf
 ```
 
