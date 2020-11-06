@@ -37,9 +37,8 @@ git clone --recursive https://github.com/NetworkGradeLinux/mion.git
 cd mion
 # To obtain related mion layers:
 git clone https://github.com/NetworkGradeLinux/meta-mion.git
-# Obtain the relevant hardware layer, i.e. git clone https://github.com/NetworkGradeLinux/meta-mion-stordis.git
-git clone https://github.com/NetworkGradeLinux/meta-mion-<ONL_VENDOR>.git
-# Add Bitbake Layer to bblayers.conf
+# Obtain the mion hardware layer
+git clone https://github.com/NetworkGradeLinux/meta-mion-bsp.git
 ```
 
 ## Basic Usage
