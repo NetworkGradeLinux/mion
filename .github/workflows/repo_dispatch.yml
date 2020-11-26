@@ -1,0 +1,30 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the dunfell branch
+  push:
+    branches: [ dunfell ]
+#  pull_request:
+#    branches: [ dunfell ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  dispatch:
+    # The type of runner that the job will run on
+    runs-on: obelus
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - name: Dispatch on push to dunfell
+        run: |
+          curl -X POST https://api.github.com/repos/NetworkGradeLinux/mion-ci/dispatches \
+          -H 'Accept: application/vnd.github.everest-preview+json' \
+          -u ${{ secrets.ACCESS_TOKEN }} \
+          --data '{"event_type": "push", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'" }}'
