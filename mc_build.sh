@@ -11,6 +11,7 @@ usage(){
 build.sh
     -e (optional emit bitbake line. Doesn't run a build, just emits what would run.)
     -m machine
+    -v vendor (optional. Some machines we can extract vendor from the name. Some we can't)
     -c container_mc_config:container_image[,container_mc_config:container_image,...]
     -h host_mc_config:host_image
     -d container_image[,container_image]    (optional disable autostart for specified containers)
@@ -21,12 +22,13 @@ EOF
 parse_args(){
     [ $# -eq 0 ] && usage
 
-    while getopts ":em:h:c:d:" opt; do
+    while getopts ":em:h:c:v:d:" opt; do
         case ${opt} in
             e ) EMIT="1" ;;		
             m ) MACHINE=$OPTARG ;;
             h ) HOST=$OPTARG ;;
             c ) CONTAINERS=$OPTARG ;;
+	    v ) VENDOR=$OPTARG ;;
             d ) DISABLE=$OPTARG ;;
             \? ) error "Unknown option -$OPTARG" ;;
             : ) error "Missing option argument for -$OPTARG" ;;
@@ -46,9 +48,12 @@ build(){
     local CONTAINER_DEPENDS=""
     local BUILD_ARGS=""
     local MC_HOST=""
-    local VENDOR=$(echo "$MACHINE"|cut -d'-' -f1)
 
     declare -a GUESTS
+
+    if [ -z "$VENDOR" ]; then
+	    local VENDOR=$(echo "$MACHINE"|cut -d'-' -f1)
+    fi
 
     if [ ! -z "$HOST" ]; then
         HOSTCONFIG=$(echo "$HOST" | cut -d':' -f1)
