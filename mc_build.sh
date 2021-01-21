@@ -11,6 +11,7 @@ usage(){
 build.sh
     -e (optional emit bitbake line. Doesn't run a build, just emits what would run.)
     -m machine
+    -k continue as much as possible after an error
     -v vendor (optional. Some machines we can extract vendor from the name. Some we can't)
     -c container_mc_config:container_image[,container_mc_config:container_image,...]
     -h host_mc_config:host_image
@@ -22,10 +23,11 @@ EOF
 parse_args(){
     [ $# -eq 0 ] && usage
 
-    while getopts ":em:h:c:v:d:" opt; do
+    while getopts ":em:kh:c:v:d:" opt; do
         case ${opt} in
             e ) EMIT="1" ;;		
             m ) MACHINE=$OPTARG ;;
+	    k ) CONTINUE="--continue" ;;
             h ) HOST=$OPTARG ;;
             c ) CONTAINERS=$OPTARG ;;
 	    v ) VENDOR=$OPTARG ;;
@@ -86,12 +88,12 @@ build(){
     if [ ! -z "$EMIT" ]; then
         cat <<EOF
     The bitbake command we would have run is:
-    BB_ENV_EXTRAWHITE="$BB_ENV_EXTRAWHITE BUILD_ARGS CONTAINER_NAMES CONTAINER_DEPENDS BBMULTICONFIG MION_CONT_DISABLE VENDOR" BUILD_ARGS="$BUILD_ARGS" BBMULTICONFIG="$BBMULTICONFIG" CONTAINER_NAMES="$CONTAINER_NAMES" CONTAINER_DEPENDS="$CONTAINER_DEPENDS" VENDOR="$VENDOR" MACHINE="$MACHINE" MION_CONT_DISABLE="$DISABLE" bitbake --continue ${GUESTS[@]} ${MC_HOST}
+    BB_ENV_EXTRAWHITE="$BB_ENV_EXTRAWHITE BUILD_ARGS CONTAINER_NAMES CONTAINER_DEPENDS BBMULTICONFIG MION_CONT_DISABLE VENDOR" BUILD_ARGS="$BUILD_ARGS" BBMULTICONFIG="$BBMULTICONFIG" CONTAINER_NAMES="$CONTAINER_NAMES" CONTAINER_DEPENDS="$CONTAINER_DEPENDS" VENDOR="$VENDOR" MACHINE="$MACHINE" MION_CONT_DISABLE="$DISABLE" bitbake ${CONTINUE} ${GUESTS[@]} ${MC_HOST}
 EOF
         exit 0
     fi
 
-    exec env BB_ENV_EXTRAWHITE="$BB_ENV_EXTRAWHITE BUILD_ARGS CONTAINER_NAMES CONTAINER_DEPENDS BBMULTICONFIG MION_CONT_DISABLE VENDOR" BUILD_ARGS="$BUILD_ARGS" BBMULTICONFIG="$BBMULTICONFIG" CONTAINER_NAMES="$CONTAINER_NAMES" CONTAINER_DEPENDS="$CONTAINER_DEPENDS" VENDOR="$VENDOR" MACHINE="$MACHINE" MION_CONT_DISABLE="$DISABLE" bitbake --continue ${GUESTS[@]} ${MC_HOST}
+    exec env BB_ENV_EXTRAWHITE="$BB_ENV_EXTRAWHITE BUILD_ARGS CONTAINER_NAMES CONTAINER_DEPENDS BBMULTICONFIG MION_CONT_DISABLE VENDOR" BUILD_ARGS="$BUILD_ARGS" BBMULTICONFIG="$BBMULTICONFIG" CONTAINER_NAMES="$CONTAINER_NAMES" CONTAINER_DEPENDS="$CONTAINER_DEPENDS" VENDOR="$VENDOR" MACHINE="$MACHINE" MION_CONT_DISABLE="$DISABLE" bitbake ${CONTINUE} ${GUESTS[@]} ${MC_HOST}
 }
 
 parse_args "$@"
