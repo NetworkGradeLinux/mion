@@ -30,3 +30,7 @@
 	path = meta-python2
 	url = https://git.openembedded.org/meta-python2
 	branch = dunfell
+[submodule "meta-intel"]
+	path = meta-intel
+	url = https://git.yoctoproject.org/git/meta-intel
+	branch = dunfell
