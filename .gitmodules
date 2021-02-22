@@ -30,3 +30,8 @@
 	path = meta-python2
 	url = https://git.openembedded.org/meta-python2
 	branch = dunfell
+[submodule "meta-sca"]
+        path = meta-sca
+	url = https://github.com/priv-kweihmann/meta-sca.git
+	branch = dunfell
+
