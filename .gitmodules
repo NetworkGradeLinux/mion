@@ -34,3 +34,8 @@
 	path = meta-intel
 	url = https://git.yoctoproject.org/git/meta-intel
 	branch = dunfell
+[submodule "meta-sca"]
+        path = meta-sca
+	url = https://github.com/priv-kweihmann/meta-sca.git
+	branch = dunfell
+
