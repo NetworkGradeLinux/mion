@@ -18,10 +18,6 @@
 	path = meta-security
 	url = https://git.yoctoproject.org/git/meta-security
 	branch = dunfell
-[submodule "meta-mender"]
-	path = meta-mender
-	url = https://github.com/mendersoftware/meta-mender.git
-	branch = dunfell
 [submodule "meta-yocto"]
 	path = meta-yocto
 	url = git://git.yoctoproject.org/meta-yocto
