@@ -47,6 +47,7 @@ git clone https://github.com/NetworkGradeLinux/meta-mion.git
 # Obtain the mion hardware layer
 git clone https://github.com/NetworkGradeLinux/meta-mion-bsp.git
 git clone https://github.com/NetworkGradeLinux/meta-mion-sde.git
+git clone https://github.com/NetworkGradeLinux/meta-mion-backports.git
 ```
 
 ## Basic Usage
