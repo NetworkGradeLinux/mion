@@ -12,7 +12,7 @@ on:
 
 jobs:
   dispatch:
-    runs-on: obelus
+    runs-on: self-hosted
     steps:
       - name: Dispatch on push to dunfell
         run: |
