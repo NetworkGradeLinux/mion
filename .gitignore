@@ -5,3 +5,5 @@
 !/build/conf/local.conf
 !/build/conf/multiconfig
 *.log
+mion-*/
+meta-mion*/
