@@ -1,0 +1,7 @@
+#!/usr/bin/python
+
+"""Swiss-army-knife FIT decoder
+"""
+
+import mion.Fit
+mion.Fit.App.main()
