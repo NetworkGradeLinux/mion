@@ -9,7 +9,6 @@ repos="
     meta-mion-backports 
     meta-mion-bsp 
     meta-mion-sde 
-    meta-mion-stratum 
     mion-ci
     mion-docs
     mion-testing
