@@ -56,10 +56,12 @@ source openembedded-core/oe-init-build-env
 ../cronie.sh -m <machine> <image>
 ```
 
+> **NOTE: The \<image\> argument must be provided last**
+
 To do a "dry run" without running a build, add `-e` which emits what would have
 run if you ran this from bitbake.
 
-If you are familiar with Yocto Project development and multiconfig and wish to
+If you are familiar with Yocto Project development and wish to
 use bitbake directly, see the local.conf for variables that need to be set. For
 running bitbake commands, including outside of building, such as
 `bitbake-layers show-layers`, run `../cronie.sh` as you otherwise would with
@@ -72,7 +74,7 @@ Example:
 BB_ENV_EXTRAWHITE="ALL_PROXY BBPATH_EXTRA BB_LOGCONFIG BB_NO_NETWORK BB_NUMBER_THREADS BB_SETSCENE_ENFORCE BB_SRCREV_POLICY DISTRO FTPS_PROXY FTP_PROXY GIT_PROXY_COMMAND HTTPS_PROXY HTTP_PROXY MACHINE NO_PROXY PARALLEL_MAKE SCREENDIR SDKMACHINE SOCKS5_PASSWD SOCKS5_USER SSH_AGENT_PID SSH_AUTH_SOCK STAMPS_DIR TCLIBC TCMODE all_proxy ftp_proxy ftps_proxy http_proxy https_proxy no_proxy  VENDOR" VENDOR="stordis" MACHINE="stordis-bf6064x-t" bitbake  "mion-onie-image-onlpv1"
 ```
 
-## Examples
+### Example
 
 ```shell
 # Builds an ONLPV1 ONIE image
