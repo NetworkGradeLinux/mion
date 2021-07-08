@@ -6,7 +6,9 @@ error() { echo "ERROR: $1" >&2; exit 1; }
 
 usage(){
     cat <<EOF
-$(basename $0) [options] image_name -or- bitbake_command
+$(basename $0) [options] image_name
+
+NOTE: Options must be give BEFORE image name
 
 options:
     -e (optional emit bitbake line. Doesn't run a build, just emits what would run.)
