@@ -20,8 +20,10 @@ EOF
 [ -z "$BBPATH" ] && error "Please source ./openembedded-core/oe-init-build-env before running this script"
 [ $# -eq 0 ] && usage
 
-while getopts "em:kv:" opt; do
+while getopts "fcem:kv:" opt; do
     case ${opt} in
+        f ) FORCE="-f" ;;
+        c ) COMMAND="-c ${OPTARG}" ;;
         e ) EMIT=true ;;
         m ) MACHINE=${OPTARG} ;;
         k ) CONTINUE="--continue" ;;
@@ -39,9 +41,9 @@ BITBAKE_ARGS="$*"
 
 if [ "${EMIT}" = "true" ]; then 
     cat <<EOF
-BB_ENV_EXTRAWHITE="$BB_ENV_EXTRAWHITE VENDOR" VENDOR="$VENDOR" MACHINE="$MACHINE" bitbake ${CONTINUE} "${BITBAKE_ARGS}"
+BB_ENV_EXTRAWHITE="$BB_ENV_EXTRAWHITE VENDOR" VENDOR="$VENDOR" MACHINE="$MACHINE" bitbake ${FORCE} ${COMMAND} ${CONTINUE} ${BITBAKE_ARGS}
 EOF
     exit
 fi
 
-exec env BB_ENV_EXTRAWHITE="$BB_ENV_EXTRAWHITE VENDOR" VENDOR="$VENDOR" MACHINE="$MACHINE" bitbake ${CONTINUE} "${BITBAKE_ARGS}"
+exec env BB_ENV_EXTRAWHITE="$BB_ENV_EXTRAWHITE VENDOR" VENDOR="$VENDOR" MACHINE="$MACHINE" bitbake ${FORCE} ${COMMAND} ${CONTINUE} ${BITBAKE_ARGS}
